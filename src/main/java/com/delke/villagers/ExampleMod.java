@@ -1,15 +1,22 @@
 package com.delke.villagers;
 
+import com.delke.villagers.capability.ReputationEvents;
+import com.delke.villagers.capability.ReputationProvider;
 import com.delke.villagers.client.ClientEvents;
 import com.delke.villagers.client.screen.VillagerInventoryMenu;
 import com.delke.villagers.network.ClientboundVillagerScreenOpenPacket;
 import com.delke.villagers.network.Network;
 import com.delke.villagers.registry.ModVillagers;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -19,6 +26,8 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.network.NetworkDirection;
+
+import java.util.UUID;
 
 @Mod("villagers")
 public class ExampleMod {
@@ -30,8 +39,10 @@ public class ExampleMod {
         bus.addListener(this::CommonSetup);
         bus.addListener(this::ClientSetup);
 
+
         ModVillagers.register(bus);
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(new ReputationEvents());
     }
 
     private void ClientSetup(final FMLClientSetupEvent event) {
@@ -59,8 +70,23 @@ public class ExampleMod {
                     player.initMenu(menu);
                     MinecraftForge.EVENT_BUS.post(new PlayerContainerEvent.Open(player, player.containerMenu));
                 }
+                else {
+                    player.getCapability(ReputationProvider.PLAYER_REPUTATION).ifPresent(playerReputation -> {
+                        playerReputation.addReputation(1);
+                        player.sendMessage(new TextComponent("added 1 - " + playerReputation.getReputation()) , UUID.randomUUID());
+                    });
+                }
             }
         }
     }
 
+    @Mod.EventBusSubscriber(modid = ExampleMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+    public static class Hmmm {
+        @SubscribeEvent
+        public static void entityAttributeEvent(EntityAttributeModificationEvent event) {
+            if (!event.has(EntityType.VILLAGER, Attributes.ATTACK_DAMAGE)) {
+                event.add(EntityType.VILLAGER, Attributes.ATTACK_DAMAGE);
+            }
+        }
+    }
 }

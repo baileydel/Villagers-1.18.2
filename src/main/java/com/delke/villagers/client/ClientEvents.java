@@ -95,15 +95,10 @@ public class ClientEvents {
     }
 
 
-    @OnlyIn(Dist.CLIENT)
+
+
     @Mod.EventBusSubscriber(value = {Dist.CLIENT}, modid = ExampleMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class ModEvents {
-        @SubscribeEvent
-        public static void entityAttributeEvent(EntityAttributeModificationEvent event) {
-            if (!event.has(EntityType.VILLAGER, Attributes.ATTACK_DAMAGE)) {
-                event.add(EntityType.VILLAGER, Attributes.ATTACK_DAMAGE);
-            }
-        }
 
         @SubscribeEvent
         public static void registerRenderer(EntityRenderersEvent.RegisterRenderers event) {
@@ -117,6 +112,4 @@ public class ClientEvents {
             event.registerLayerDefinition(OUTER_ARMOR, () -> NewVillagerModel.createArmorLayer(new CubeDeformation(1.0F)));
         }
     }
-
-
 }
