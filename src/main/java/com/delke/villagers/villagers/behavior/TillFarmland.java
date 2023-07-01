@@ -36,9 +36,6 @@ public class TillFarmland extends Behavior<Villager> {
    protected void start(@NotNull ServerLevel level, @NotNull Villager villager, long time) {
       if (this.waterSource != null && tillableDirt.size() > 0) {
          BlockPosTracker pos = new BlockPosTracker(tillableDirt.get(0));
-
-         System.out.println("Initial pos : " + pos);
-
          villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, pos);
          villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, 0.5F, 1));
       }
@@ -49,8 +46,6 @@ public class TillFarmland extends Behavior<Villager> {
          BlockPos dirt = tillableDirt.get(0);
 
          if (dirt.closerToCenterThan(villager.position(), 1.5D)) {
-            System.out.println("Tilling " + dirt);
-
             level.playSound(null, dirt, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
             level.setBlock(dirt, Blocks.FARMLAND.defaultBlockState(), 3);
 
@@ -58,11 +53,9 @@ public class TillFarmland extends Behavior<Villager> {
 
             if (tillableDirt.size() > 0) {
                dirt = tillableDirt.get(0);
-               System.out.println("next pos " + dirt);
                BlockPosTracker tracker = new BlockPosTracker(dirt);
                villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(tracker, 0.5F, 1));
                villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, tracker);
-               System.out.println("\n\n\n");
             }
          }
       }
@@ -88,7 +81,6 @@ public class TillFarmland extends Behavior<Villager> {
 
                   if (state.is(Blocks.WATER)) {
                      waterSource = blockPos;
-                     System.out.println("Found water source at " + blockPos);
                      found = true;
                      break;
                   }
@@ -110,7 +102,6 @@ public class TillFarmland extends Behavior<Villager> {
                      BlockState above = level.getBlockState(blockPos.above());
 
                      if (above.is(Blocks.AIR) && !has(blockPos)) {
-                        System.out.println("Found dirt block, with valid air above. " + blockPos);
                         tillableDirt.add(new BlockPos(blockPos));
                      }
                   }
@@ -132,7 +123,6 @@ public class TillFarmland extends Behavior<Villager> {
       }
       return false;
    }
-
 
    protected boolean canStillUse(@NotNull ServerLevel level, @NotNull Villager villager, long p_23206_) {
      return timeWorked < 200;

@@ -1,8 +1,8 @@
 package com.delke.villagers.mixin;
 
-import com.delke.villagers.villagers.profession.NewVillagerProfession;
+import com.delke.villagers.villagers.OverrideBrain;
+import com.delke.villagers.villagers.profession.AbstractProfession;
 import net.minecraft.world.entity.ai.Brain;
-import net.minecraft.world.entity.ai.goal.GoalSelector;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerData;
 import net.minecraft.world.entity.npc.VillagerProfession;
@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * @project Villagers-1.18.2
  */
 @Mixin(Villager.class)
-public abstract class ProfessionChangeMixin {
+public abstract class VillagerBrainMixin {
 
     @Shadow public abstract VillagerData getVillagerData();
 
@@ -28,28 +28,23 @@ public abstract class ProfessionChangeMixin {
             cancellable = true
     )
     private void registerBrainGoals(Brain<Villager> brain, CallbackInfo ci) {
+        Villager villager = ((Villager)(Object)this);
         VillagerData data = getVillagerData();
         VillagerProfession profession = data.getProfession();
 
-        if (profession instanceof NewVillagerProfession newProf) {
-            newProf.registerBrain(brain);
-            newProf.registerGoals((Villager)(Object)this);
+        if (villager.goalSelector != null) {
+            villager.targetSelector.removeAllGoals();
+            villager.goalSelector.removeAllGoals();
+        }
+
+        if (profession instanceof AbstractProfession newProf) {
+            newProf.registerBrain(brain, villager);
+            newProf.registerGoals(villager);
 
             ci.cancel();
             return;
         }
 
-        GoalSelector goalSelector = ((Villager)(Object)this).goalSelector;
-        GoalSelector targetSelector = ((Villager)(Object)this).targetSelector;
-
-        if  (targetSelector != null) {
-            targetSelector.removeAllGoals();
-        }
-
-        if  (goalSelector != null) {
-            goalSelector.removeAllGoals();
-        }
-
-
+        OverrideBrain.DEFAULT_BRAIN(brain, villager);
     }
 }

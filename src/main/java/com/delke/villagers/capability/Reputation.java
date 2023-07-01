@@ -14,7 +14,7 @@ public class Reputation {
         this.reputation = reputation;
     }
 
-    public int getReputation() {
+    public int get() {
         return this.reputation;
     }
 

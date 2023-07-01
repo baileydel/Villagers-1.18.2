@@ -33,9 +33,7 @@ public class ClientboundVillagerScreenOpenPacket {
 
    public static void handle(ClientboundVillagerScreenOpenPacket msg, Supplier<NetworkEvent.Context> ctx) {
       ctx.get().enqueueWork(() ->
-              DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
-                      () ->
-                              () -> ClientPacketHandler.handVillagerScreenPacket(msg, ctx)));
+              DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientPacketHandler.handVillagerScreenPacket(msg, ctx)));
       ctx.get().setPacketHandled(true);
    }
 

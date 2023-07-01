@@ -2,6 +2,7 @@ package com.delke.villagers.registry;
 
 import com.delke.villagers.ExampleMod;
 import com.delke.villagers.villagers.profession.Guard;
+import com.delke.villagers.villagers.profession.NewFarmer;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.level.block.Blocks;
@@ -17,10 +18,14 @@ import net.minecraftforge.registries.RegistryObject;
  * @project Villagers-1.18.2
  */
 public class ModVillagers {
-    public static final DeferredRegister<PoiType> POI_TYPES = DeferredRegister.create(ForgeRegistries.POI_TYPES, ExampleMod.MOD_ID);
     public static final DeferredRegister<VillagerProfession> VILLAGER_PROFESSIONS = DeferredRegister.create(ForgeRegistries.PROFESSIONS, ExampleMod.MOD_ID);
+    public static final DeferredRegister<PoiType> POI_TYPES = DeferredRegister.create(ForgeRegistries.POI_TYPES, ExampleMod.MOD_ID);
+
     public static final RegistryObject<PoiType> GUARD_POI = POI_TYPES.register("guard_poi", () -> new PoiType("guard", PoiType.getBlockStates(Blocks.WAXED_COPPER_BLOCK), 1, 1));
     public static final RegistryObject<VillagerProfession> GUARD = VILLAGER_PROFESSIONS.register("guard", Guard::new);
+
+    public static final RegistryObject<VillagerProfession> NEWFARMER = VILLAGER_PROFESSIONS.register("newfarmer", NewFarmer::new);
+
 
     public static void registerPOIs() {
         try {

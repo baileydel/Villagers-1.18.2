@@ -75,11 +75,16 @@ public class ClientEvents {
 
     @SubscribeEvent
     public void RenderEntityInfo(RenderNameplateEvent event) {
-        if (event.getEntity() instanceof Villager villager) {
-            VillagerDebugger d = debuggers.get(villager);
-            if (d != null) {
-                d.render(event);
+        try {
+            if (event.getEntity() instanceof Villager villager) {
+                VillagerDebugger d = debuggers.get(villager);
+                if (d != null) {
+                    d.render(event);
+                }
             }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -93,9 +98,6 @@ public class ClientEvents {
             }
         }
     }
-
-
-
 
     @Mod.EventBusSubscriber(value = {Dist.CLIENT}, modid = ExampleMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class ModEvents {

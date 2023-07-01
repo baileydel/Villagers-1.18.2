@@ -5,6 +5,7 @@ import net.minecraft.world.ContainerListener;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.AbstractVillager;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
@@ -34,10 +35,6 @@ public class AbstractVillagerMixin implements ContainerListener {
         inventory.addListener(this);
     }
 
-
     @Override
-    public void containerChanged(@NotNull Container container) {
-
-
-    }
+    public void containerChanged(@NotNull Container container) {}
 }

@@ -3,10 +3,10 @@
   "package": "com.delke.villagers.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "ProfessionChangeMixin",
-    "AbstractVillagerMixin"
+    "AbstractVillagerMixin",
+    "ProfessionOverrideMixin",
+    "VillagerBrainMixin"
   ],
-
   "injectors": {
     "defaultRequire": 1
   },

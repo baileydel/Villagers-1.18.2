@@ -1,7 +1,6 @@
 package com.delke.villagers.capability;
 
 import com.delke.villagers.ExampleMod;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -12,8 +11,6 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-
-import java.util.UUID;
 
 /**
  * @author Bailey Delker
@@ -32,8 +29,10 @@ public class ReputationEvents {
     }
 
     @SubscribeEvent
-    public void PlayerKilledVillager(LivingDamageEvent event) {
+    public void PlayerHurtVillager(LivingDamageEvent event) {
         if (event.getEntity() instanceof Villager villager && event.getSource().getDirectEntity() instanceof ServerPlayer player) {
+            System.out.println(villager.getHealth());
+
             int repToTake;
             int amount = (int)event.getAmount();
 
@@ -46,19 +45,10 @@ public class ReputationEvents {
                 repToTake = 1;
             }
 
-            player.getCapability(ReputationProvider.PLAYER_REPUTATION).ifPresent(playerReputation -> {
-                playerReputation.addReputation(-repToTake);
-            });
+            player.getCapability(ReputationProvider.PLAYER_REPUTATION).ifPresent(playerReputation -> playerReputation.addReputation(-repToTake));
         }
     }
 
     @SubscribeEvent
-    public void PlayerClone(PlayerEvent.Clone event) {
-
-    }
-
-    @SubscribeEvent
-    public void RegisterCapabilities(RegisterCapabilitiesEvent event) {
-        event.register(Reputation.class);
-    }
+    public void PlayerClone(PlayerEvent.Clone event) {}
 }

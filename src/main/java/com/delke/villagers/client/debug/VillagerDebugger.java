@@ -12,6 +12,8 @@ import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraftforge.client.event.RenderNameplateEvent;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -31,13 +33,9 @@ public class VillagerDebugger {
     }
 
     public void render(RenderNameplateEvent event) {
-        Minecraft mc = Minecraft.getInstance();
-        Font font = mc.font;
-
         if (villager.isAlive()) {
             PoseStack stack = event.getPoseStack();
             MultiBufferSource source = event.getMultiBufferSource();
-            Brain<Villager> brain = villager.getBrain();
 
             stack.pushPose();
             stack.translate(0.0D, villager.getBbHeight() + 0.5F, 0.0D);
@@ -45,9 +43,12 @@ public class VillagerDebugger {
             stack.scale(-0.025F, -0.025F, 0.025F);
 
             Matrix4f matrix4f = stack.last().pose();
+            Font font = Minecraft.getInstance().font;
 
             float y = 17;
-            for (Behavior<? super Villager> behavior: brain.getRunningBehaviors()) {
+            List<String> h = new ArrayList<>();
+            Brain<Villager> brain = villager.getBrain();
+            for (Behavior<? super Villager> behavior: brain.getRunningBehaviors().stream().toList()) {
                 if (brain.getRunningBehaviors().size() > 0 && behavior.toString().contains("DoNothing")) {
                     continue;
                 }
@@ -56,12 +57,17 @@ public class VillagerDebugger {
                 String an = ar[ar.length - 1].replace("[", "").replace("]", "");
 
                 if (an.length() > 0) {
-                    font.drawInBatch(new TranslatableComponent(an), (-font.width(an) / 2F) + 70, y, -1, false, matrix4f, source, false, 1056964608, 0xFFFFFF);
-                    y += font.lineHeight + 2;
+                    if (!h.contains(an)) {
+                        h.add(an);
+
+                        font.drawInBatch(new TranslatableComponent(an), (-font.width(an) / 2F) + 70, y, -1, false, matrix4f, source, false, 1056964608, 0xFFFFFF);
+                        y += font.lineHeight + 2;
+                    }
                 }
             }
 
             y = 17;
+
             for (Activity activity : brain.getActiveActivities().stream().toList()) {
                 String an = activity.getName();
                 font.drawInBatch(new TranslatableComponent(an), (-font.width(an) / 2F) - 30, y, -1, false, matrix4f, source, false, 1056964608, 0xFFFFFF);
