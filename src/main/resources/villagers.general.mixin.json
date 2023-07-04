@@ -11,5 +11,8 @@
     "defaultRequire": 1
   },
   "refmap": "villagers.general.mixin-refmap.json",
-  "minVersion": "0.8"
+  "minVersion": "0.8",
+  "client": [
+    "OverlayMixin"
+  ]
 }
