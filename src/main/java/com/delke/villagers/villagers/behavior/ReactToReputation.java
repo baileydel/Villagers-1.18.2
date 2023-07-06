@@ -74,7 +74,6 @@ public class ReactToReputation extends Behavior<Villager> {
 
                 player.sendMessage(new TextComponent("omg im panicking" + playerReputation.getReputation()), UUID.randomUUID());
                  */
-
             });
         }
         this.nearestEntityMatchingTest = Optional.empty();

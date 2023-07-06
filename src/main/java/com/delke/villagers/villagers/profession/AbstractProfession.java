@@ -1,6 +1,6 @@
 package com.delke.villagers.villagers.profession;
 
-import com.delke.villagers.villagers.OverrideBrain;
+import com.delke.villagers.villagers.override.OverrideBrain;
 import com.delke.villagers.villagers.VillagerManager;
 import com.delke.villagers.villagers.behavior.Produce;
 import com.delke.villagers.villagers.behavior.ReactToReputation;

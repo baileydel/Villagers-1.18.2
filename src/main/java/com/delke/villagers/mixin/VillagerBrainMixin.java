@@ -1,6 +1,6 @@
 package com.delke.villagers.mixin;
 
-import com.delke.villagers.villagers.OverrideBrain;
+import com.delke.villagers.villagers.override.OverrideBrain;
 import com.delke.villagers.villagers.profession.AbstractProfession;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.npc.Villager;

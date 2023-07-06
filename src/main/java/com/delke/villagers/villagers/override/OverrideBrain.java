@@ -1,4 +1,4 @@
-package com.delke.villagers.villagers;
+package com.delke.villagers.villagers.override;
 
 import com.delke.villagers.villagers.behavior.ReactToReputation;
 import com.delke.villagers.villagers.profession.AbstractProfession;

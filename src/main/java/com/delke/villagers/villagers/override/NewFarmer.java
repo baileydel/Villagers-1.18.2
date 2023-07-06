@@ -1,6 +1,7 @@
-package com.delke.villagers.villagers.profession;
+package com.delke.villagers.villagers.override;
 
 import com.delke.villagers.villagers.behavior.TillFarmland;
+import com.delke.villagers.villagers.profession.AbstractProfession;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;

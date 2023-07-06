@@ -2,7 +2,7 @@ package com.delke.villagers.villagers;
 
 import com.delke.villagers.ExampleMod;
 import com.delke.villagers.villagers.profession.Guard;
-import com.delke.villagers.villagers.profession.NewFarmer;
+import com.delke.villagers.villagers.override.NewFarmer;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.level.block.Blocks;
@@ -41,5 +41,4 @@ public class VillagerManager {
         POI_TYPES.register(bus);
         VILLAGER_PROFESSIONS.register(bus);
     }
-
 }
