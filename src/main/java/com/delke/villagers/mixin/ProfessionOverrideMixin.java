@@ -1,7 +1,6 @@
 package com.delke.villagers.mixin;
 
-import com.delke.villagers.registry.ModVillagers;
-import com.delke.villagers.villagers.profession.NewFarmer;
+import com.delke.villagers.villagers.VillagerManager;
 import net.minecraft.world.entity.npc.VillagerData;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerType;
@@ -26,10 +25,11 @@ public class ProfessionOverrideMixin {
     @Inject(
             method = "setProfession",
             at = @At("TAIL"),
-            cancellable = true)
+            cancellable = true
+    )
     private void setProfession(VillagerProfession profession, CallbackInfoReturnable<VillagerData> cir) {
         if (profession.getName().equals("farmer")) {
-            cir.setReturnValue(new VillagerData(type, ModVillagers.NEWFARMER.get(), level));
+            cir.setReturnValue(new VillagerData(type, VillagerManager.NEWFARMER.get(), level));
         }
     }
 }

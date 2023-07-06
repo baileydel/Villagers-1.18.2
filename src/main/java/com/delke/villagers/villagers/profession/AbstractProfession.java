@@ -1,7 +1,7 @@
 package com.delke.villagers.villagers.profession;
 
-import com.delke.villagers.registry.ModVillagers;
 import com.delke.villagers.villagers.OverrideBrain;
+import com.delke.villagers.villagers.VillagerManager;
 import com.delke.villagers.villagers.behavior.Produce;
 import com.delke.villagers.villagers.behavior.ReactToReputation;
 import com.google.common.collect.ImmutableList;
@@ -81,7 +81,7 @@ public class AbstractProfession extends VillagerProfession {
 
     public List<Pair<Behavior<? super Villager>, Integer>> getRunOnePackage() {
         //TODO make this more advanced
-        WorkAtPoi workatpoi = this == ModVillagers.NEWFARMER.get() ? new WorkAtComposter() : new WorkAtPoi();
+        WorkAtPoi workatpoi = this == VillagerManager.NEWFARMER.get() ? new WorkAtComposter() : new WorkAtPoi();
 
         List<Pair<Behavior<? super Villager>, Integer>> t = new ArrayList<>(List.of(
                 Pair.of(workatpoi, 7),

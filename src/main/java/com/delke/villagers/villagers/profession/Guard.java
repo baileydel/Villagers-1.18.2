@@ -23,7 +23,8 @@ import net.minecraft.world.entity.player.Player;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.delke.villagers.registry.ModVillagers.GUARD_POI;
+import static com.delke.villagers.villagers.VillagerManager.GUARD_POI;
+
 
 /**
  * @author Bailey Delker

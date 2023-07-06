@@ -4,15 +4,16 @@ import com.delke.villagers.ExampleMod;
 import com.delke.villagers.client.debug.VillagerDebugger;
 import com.delke.villagers.client.rendering.NewVillagerModel;
 import com.delke.villagers.client.rendering.NewVillagerRenderer;
+import com.delke.villagers.client.screen.MainScreen;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
@@ -20,9 +21,10 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderNameplateEvent;
+import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -39,8 +41,16 @@ import static com.delke.villagers.client.rendering.NewVillagerModel.*;
  */
 @OnlyIn(Dist.CLIENT)
 public class ClientEvents {
-
     private final Map<Villager, VillagerDebugger> debuggers = new HashMap<>();
+
+
+    //TODO Extract GUI Mod
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void OverrideMainMenu(ScreenEvent.InitScreenEvent event) {
+        if (event.getScreen() instanceof TitleScreen) {
+            Minecraft.getInstance().setScreen(new MainScreen());
+        }
+    }
 
     @SubscribeEvent
     public void RenderInfo(RenderGameOverlayEvent event) {

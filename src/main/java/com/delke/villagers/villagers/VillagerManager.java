@@ -1,4 +1,4 @@
-package com.delke.villagers.registry;
+package com.delke.villagers.villagers;
 
 import com.delke.villagers.ExampleMod;
 import com.delke.villagers.villagers.profession.Guard;
@@ -14,10 +14,11 @@ import net.minecraftforge.registries.RegistryObject;
 
 /**
  * @author Bailey Delker
- * @created 06/09/2023 - 10:33 PM
+ * @created 07/04/2023 - 3:06 PM
  * @project Villagers-1.18.2
  */
-public class ModVillagers {
+public class VillagerManager {
+
     public static final DeferredRegister<VillagerProfession> VILLAGER_PROFESSIONS = DeferredRegister.create(ForgeRegistries.PROFESSIONS, ExampleMod.MOD_ID);
     public static final DeferredRegister<PoiType> POI_TYPES = DeferredRegister.create(ForgeRegistries.POI_TYPES, ExampleMod.MOD_ID);
 
@@ -40,4 +41,5 @@ public class ModVillagers {
         POI_TYPES.register(bus);
         VILLAGER_PROFESSIONS.register(bus);
     }
+
 }
