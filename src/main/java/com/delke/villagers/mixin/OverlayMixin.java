@@ -58,7 +58,7 @@ public abstract class OverlayMixin {
             at = @At("HEAD"),
             cancellable = true
     )
-    private void setProfession(PoseStack p_96178_, int p_96179_, int p_96180_, float p_96181_, CallbackInfo ci) {
+    private void render(PoseStack p_96178_, int p_96179_, int p_96180_, float p_96181_, CallbackInfo ci) {
         int i = this.minecraft.getWindow().getGuiScaledWidth();
         int j = this.minecraft.getWindow().getGuiScaledHeight();
         int BRAND_BACKGROUND = FastColor.ARGB32.color(255, 0, 0, 0);

@@ -2,24 +2,18 @@ package com.delke.villagers.villagers.behavior;
 
 import com.delke.villagers.capability.ReputationProvider;
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.memory.NearestVisibleLivingEntities;
 import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.entity.schedule.Activity;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Predicate;
 
 /**
@@ -32,8 +26,8 @@ public class ReactToReputation extends Behavior<Villager> {
     private final float maxDistSqr;
     private Optional<LivingEntity> nearestEntityMatchingTest = Optional.empty();
 
-    public ReactToReputation(EntityType<?> p_23894_, float p_23895_) {
-        this((p_23911_) -> p_23894_.equals(p_23911_.getType()), p_23895_);
+    public ReactToReputation(EntityType<?> type, float p_23895_) {
+        this((entity) -> type.equals(entity.getType()), p_23895_);
     }
 
     public ReactToReputation(float p_23892_) {
@@ -41,7 +35,10 @@ public class ReactToReputation extends Behavior<Villager> {
     }
 
     public ReactToReputation(Predicate<LivingEntity> p_23900_, float p_23901_) {
-        super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryStatus.VALUE_ABSENT, MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES, MemoryStatus.VALUE_PRESENT));
+        super(ImmutableMap.of(
+                MemoryModuleType.LOOK_TARGET, MemoryStatus.VALUE_ABSENT,
+                MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES, MemoryStatus.VALUE_PRESENT)
+        );
         this.predicate = p_23900_;
         this.maxDistSqr = p_23901_ * p_23901_;
     }
