@@ -1,10 +1,15 @@
-package com.delke.villagers.villagers.override;
+package com.delke.villagers.villagers;
 
 import com.delke.villagers.villagers.behavior.ReactToReputation;
 import com.delke.villagers.villagers.profession.AbstractProfession;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.behavior.*;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
@@ -28,14 +33,14 @@ public class OverrideBrain {
     public static void DEFAULT_BRAIN(Brain<Villager> brain, Villager villager) {
         VillagerProfession profession = villager.getVillagerData().getProfession();
 
-        ImmutableList<Pair<Integer, ? extends Behavior<? super Villager>>> core = OverrideBrain.getCorePackage(profession);
+        ImmutableList<Pair<Integer, ? extends Behavior<? super Villager>>> core = getCorePackage(profession);
         ImmutableList<Pair<Integer, ? extends Behavior<? super Villager>>> rest = VillagerGoalPackages.getRestPackage(profession, 0.5F);
-        ImmutableList<Pair<Integer, ? extends Behavior<? super Villager>>> idle = VillagerGoalPackages.getIdlePackage(profession, 0.5F);
+        ImmutableList<Pair<Integer, ? extends Behavior<? super Villager>>> idle = getIdlePackage();
         ImmutableList<Pair<Integer, ? extends Behavior<? super Villager>>> panic = VillagerGoalPackages.getPanicPackage(profession, 0.5F);
         ImmutableList<Pair<Integer, ? extends Behavior<? super Villager>>> preraid = VillagerGoalPackages.getPreRaidPackage(profession, 0.5F);
         ImmutableList<Pair<Integer, ? extends Behavior<? super Villager>>> raid = VillagerGoalPackages.getRaidPackage(profession, 0.5F);
         ImmutableList<Pair<Integer, ? extends Behavior<? super Villager>>> hide = VillagerGoalPackages.getHidePackage(profession, 0.5F);
-        ImmutableList<Pair<Integer, ? extends Behavior<? super Villager>>> meet = VillagerGoalPackages.getMeetPackage(profession, 0.5F);
+        ImmutableList<Pair<Integer, ? extends Behavior<? super Villager>>> meet = getMeetPackage();
         ImmutableList<Pair<Integer, ? extends Behavior<? super Villager>>> work = VillagerGoalPackages.getWorkPackage(profession, 0.5F);
 
         Schedule schedule = villager.isBaby() ? Schedule.VILLAGER_BABY : Schedule.VILLAGER_DEFAULT;
@@ -104,5 +109,57 @@ public class OverrideBrain {
                 Pair.of(10, new AssignProfessionFromJobSite()),
                 Pair.of(10, new ResetProfession())
         );
+    }
+
+    public static ImmutableList<Pair<Integer, ? extends Behavior<? super Villager>>> getIdlePackage() {
+        return ImmutableList.of(
+                Pair.of(2, new RunOne<>(ImmutableList.of(
+                        Pair.of(InteractWith.of(EntityType.VILLAGER, 8, MemoryModuleType.INTERACTION_TARGET, 0.5F, 2), 2),
+                        Pair.of(new InteractWith<>(EntityType.VILLAGER, 8, AgeableMob::canBreed, AgeableMob::canBreed, MemoryModuleType.BREED_TARGET, 0.5F, 2), 1),
+                        Pair.of(InteractWith.of(EntityType.CAT, 8, MemoryModuleType.INTERACTION_TARGET, 0.5F, 2), 1),
+                        Pair.of(new VillageBoundRandomStroll(0.5F), 1),
+                        Pair.of(new SetWalkTargetFromLookTarget(0.5F, 2), 1),
+                        Pair.of(new JumpOnBed(0.5F), 1), Pair.of(new DoNothing(30, 60), 1)))
+                ),
+                Pair.of(3, new GiveGiftToHero(100)), Pair.of(3, new SetLookAndInteract(EntityType.PLAYER, 4)),
+                Pair.of(3, new GateBehavior<>(ImmutableMap.of(), ImmutableSet.of(MemoryModuleType.INTERACTION_TARGET), GateBehavior.OrderPolicy.ORDERED, GateBehavior.RunningPolicy.RUN_ONE,
+                        ImmutableList.of(
+                                Pair.of(new TradeWithVillager(), 1))
+                        )
+                ),
+                Pair.of(3, new GateBehavior<>(ImmutableMap.of(), ImmutableSet.of(MemoryModuleType.BREED_TARGET), GateBehavior.OrderPolicy.ORDERED, GateBehavior.RunningPolicy.RUN_ONE,
+                        ImmutableList.of(
+                                Pair.of(new VillagerMakeLove(), 1))
+                        )
+                ),
+                getFullLookBehavior(),
+                Pair.of(99, new UpdateActivityFromSchedule())
+        );
+    }
+
+    public static ImmutableList<Pair<Integer, ? extends Behavior<? super Villager>>> getMeetPackage() {
+        return ImmutableList.of(
+                Pair.of(2, new RunOne<>(
+                        ImmutableList.of(
+                                Pair.of(new StrollAroundPoi(MemoryModuleType.MEETING_POINT, 0.4F, 40), 2),
+                                Pair.of(new SocializeAtBell(), 2))
+                        )
+                ),
+                Pair.of(10, new SetLookAndInteract(EntityType.PLAYER, 4)),
+                Pair.of(2, new SetWalkTargetFromBlockMemory(MemoryModuleType.MEETING_POINT, 0.5F, 6, 100, 200)),
+                Pair.of(3, new GiveGiftToHero(100)),
+                Pair.of(3, new ValidateNearbyPoi(PoiType.MEETING, MemoryModuleType.MEETING_POINT)),
+                Pair.of(3, new GateBehavior<>(
+                        ImmutableMap.of(),
+                        ImmutableSet.of(MemoryModuleType.INTERACTION_TARGET), GateBehavior.OrderPolicy.ORDERED, GateBehavior.RunningPolicy.RUN_ONE,
+                        ImmutableList.of(Pair.of(new TradeWithVillager(), 1)))
+                ),
+                getFullLookBehavior(),
+                Pair.of(99, new UpdateActivityFromSchedule())
+        );
+    }
+
+    private static Pair<Integer, Behavior<LivingEntity>> getFullLookBehavior() {
+        return Pair.of(5, new RunOne<>(ImmutableList.of(Pair.of(new SetEntityLookTarget(EntityType.CAT, 8.0F), 8), Pair.of(new SetEntityLookTarget(EntityType.VILLAGER, 8.0F), 2), Pair.of(new SetEntityLookTarget(EntityType.PLAYER, 8.0F), 2), Pair.of(new SetEntityLookTarget(MobCategory.CREATURE, 8.0F), 1), Pair.of(new SetEntityLookTarget(MobCategory.WATER_CREATURE, 8.0F), 1), Pair.of(new SetEntityLookTarget(MobCategory.AXOLOTLS, 8.0F), 1), Pair.of(new SetEntityLookTarget(MobCategory.UNDERGROUND_WATER_CREATURE, 8.0F), 1), Pair.of(new SetEntityLookTarget(MobCategory.WATER_AMBIENT, 8.0F), 1), Pair.of(new SetEntityLookTarget(MobCategory.MONSTER, 8.0F), 1), Pair.of(new DoNothing(30, 60), 2))));
     }
 }
