@@ -1,14 +1,15 @@
 package com.delke.villagers.villagers.profession;
 
-import com.delke.villagers.villagers.override.OverrideBrain;
-import com.delke.villagers.villagers.VillagerManager;
+import com.delke.villagers.villagers.OverrideBrain;
 import com.delke.villagers.villagers.behavior.Produce;
 import com.delke.villagers.villagers.behavior.ReactToReputation;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,6 +23,7 @@ import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.schedule.Schedule;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,7 +52,7 @@ public class AbstractProfession extends VillagerProfession {
         return villager.isBaby() ? Schedule.VILLAGER_BABY : Schedule.VILLAGER_DEFAULT;
     }
 
-    public ImmutableList<Item> getProducibleItems() {
+    public ImmutableList<ItemStack> getProducibleItems() {
         return ImmutableList.of();
     }
 
@@ -62,11 +64,11 @@ public class AbstractProfession extends VillagerProfession {
         List<Pair<Integer, ? extends Behavior<? super Villager>>> t = new ArrayList<Pair<Integer, ? extends Behavior<? super Villager>>>(List.of(
                 Pair.of(2, new SetWalkTargetFromBlockMemory(MemoryModuleType.JOB_SITE, 0.5F, 9, 100, 1200)),
 
-                getMinimalLookBehavior(),
-
                 Pair.of(5, new RunOne<>(
                         getRunOnePackage()
                 )),
+
+                getMinimalLookBehavior(),
 
                 Pair.of(99, new UpdateActivityFromSchedule())
         ));
@@ -79,21 +81,50 @@ public class AbstractProfession extends VillagerProfession {
         return ImmutableList.copyOf(t);
     }
 
+    /**
+     * Gets POI Behaviors, used my getRunOne
+     * Is added to the list of Single executed work behaviors
+     * @return
+     */
+    public List<Pair<Behavior<? super Villager>, Integer>> getWorkPOIBehaviorPackage() {
+        return new ArrayList<>(List.of(
+                getWorkPOIBehavior(),
+                Pair.of(new StrollAroundPoi(MemoryModuleType.JOB_SITE, 0.4F, 4), 6),
+                Pair.of(new StrollToPoiList(MemoryModuleType.SECONDARY_JOB_SITE, 0.5F, 1, 6, MemoryModuleType.JOB_SITE), 9)
+        ));
+    }
+
+
+    /**
+     * Gets work poi behavior (most of it is looking at a block)
+     * 
+     * @return
+     */
+    public Pair<Behavior<? super Villager>, Integer> getWorkPOIBehavior() {
+        return Pair.of(new WorkAtPoi(), 7);
+    }
+
+    /**
+     * Creates a list of behaviors for coreWorkPackage
+     * Only one of these behaviors will be executed a time
+     * @return
+     */
     public List<Pair<Behavior<? super Villager>, Integer>> getRunOnePackage() {
         //TODO make this more advanced
-        WorkAtPoi workatpoi = this == VillagerManager.NEWFARMER.get() ? new WorkAtComposter() : new WorkAtPoi();
 
+        // Every Villager will go to their work site.
         List<Pair<Behavior<? super Villager>, Integer>> t = new ArrayList<>(List.of(
-                Pair.of(workatpoi, 7),
-                Pair.of(new StrollAroundPoi(MemoryModuleType.JOB_SITE, 0.4F, 4), 2),
-                Pair.of(new StrollToPoi(MemoryModuleType.JOB_SITE, 0.4F, 2, 10), 5),
-                Pair.of(new StrollToPoiList(MemoryModuleType.SECONDARY_JOB_SITE, 0.5F, 1, 6, MemoryModuleType.JOB_SITE), 5)
+                Pair.of(new StrollToPoi(MemoryModuleType.JOB_SITE, 0.4F, 2, 10), 5)
         ));
 
+        t.addAll(getWorkPOIBehaviorPackage());
+
+        // Every Producer will produce
         if (isProducer()) {
            t.add(Pair.of(new Produce(), 1));
         }
 
+        // Any additional behaviors
         t.addAll(getSecondWorkPackage());
 
         return t;
