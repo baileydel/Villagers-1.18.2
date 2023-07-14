@@ -4,10 +4,13 @@ import com.delke.villagers.capability.Reputation;
 import com.delke.villagers.capability.ReputationEvents;
 import com.delke.villagers.capability.ReputationProvider;
 import com.delke.villagers.client.ClientEvents;
+import com.delke.villagers.client.screen.MainScreen;
 import com.delke.villagers.client.screen.VillagerInventoryMenu;
 import com.delke.villagers.network.ClientboundVillagerScreenOpenPacket;
 import com.delke.villagers.network.Network;
 import com.delke.villagers.villagers.VillagerManager;
+import com.mojang.blaze3d.platform.ScreenManager;
+import net.minecraft.client.gui.screens.worldselection.WorldSelectionList;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -28,6 +31,7 @@ import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
@@ -70,6 +74,7 @@ public class ExampleMod {
         event.enqueueWork(VillagerManager::registerPOIs);
         Network.init();
     }
+
 
     @SubscribeEvent
     public void EntityInteract(PlayerInteractEvent.EntityInteract event) {
@@ -119,7 +124,8 @@ public class ExampleMod {
 
     @SubscribeEvent
     public void AddVillagerTrades(VillagerTradesEvent event) {
-        if (event.getType() == VillagerManager.NEWFARMER.get()) {
+        //TODO this is temp
+        if (event.getType() == VillagerManager.overrideMap.get("newfarmer").get()) {
 
             event.getTrades().put(1, List.of(
                     new EmeraldForItems(Items.WHEAT, 20, 16, 2),
@@ -236,12 +242,12 @@ public class ExampleMod {
     }
 
     @Mod.EventBusSubscriber(modid = ExampleMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-        public static class ModEvents {
-            @SubscribeEvent
-            public static void entityAttributeEvent(EntityAttributeModificationEvent event) {
-                if (!event.has(EntityType.VILLAGER, Attributes.ATTACK_DAMAGE)) {
-                    event.add(EntityType.VILLAGER, Attributes.ATTACK_DAMAGE);
-                }
+    public static class ModEvents {
+        @SubscribeEvent
+        public static void entityAttributeEvent(EntityAttributeModificationEvent event) {
+            if (!event.has(EntityType.VILLAGER, Attributes.ATTACK_DAMAGE)) {
+                event.add(EntityType.VILLAGER, Attributes.ATTACK_DAMAGE);
             }
+        }
     }
 }
