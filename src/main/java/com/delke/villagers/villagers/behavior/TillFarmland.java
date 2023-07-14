@@ -1,5 +1,6 @@
 package com.delke.villagers.villagers.behavior;
 
+import com.delke.villagers.villagers.VillagerManager;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -11,10 +12,12 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.system.CallbackI;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +38,7 @@ public class TillFarmland extends Behavior<Villager> {
 
    protected void start(@NotNull ServerLevel level, @NotNull Villager villager, long time) {
       if (this.waterSource != null && tillableDirt.size() > 0) {
+         //BehaviorUtils.setWalkAndLookTargetMemories(villager, tillableDirt.get(0), 0.5F, 1);
          BlockPosTracker pos = new BlockPosTracker(tillableDirt.get(0));
          villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, pos);
          villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, 0.5F, 1));
@@ -70,7 +74,23 @@ public class TillFarmland extends Behavior<Villager> {
    }
 
    protected boolean checkExtraStartConditions(@NotNull ServerLevel level, @NotNull Villager villager) {
-      if (villager.getVillagerData().getProfession() == VillagerProfession.FARMER && tillableDirt.size() == 0) {
+      boolean f = false;
+
+      // Search for hoe
+      for (int i = 0; i < villager.getInventory().getContainerSize(); i++) {
+         ItemStack stack = villager.getInventory().getItem(i);
+
+         if (stack.is(Items.WOODEN_HOE)) {
+            f = true;
+         }
+      }
+
+      if (!f) {
+         villager.getBrain().setMemory(VillagerManager.NEED_ITEM.get(), new ItemStack(Items.WOODEN_HOE));
+         System.out.println("cannot find hoe, going to request");
+      }
+
+      if (f && tillableDirt.size() == 0) {
          BlockPos.MutableBlockPos blockPos = villager.blockPosition().mutable();
          boolean found = false;
 
@@ -109,7 +129,7 @@ public class TillFarmland extends Behavior<Villager> {
             }
          }
       }
-      return tillableDirt.size() > 0;
+      return f && tillableDirt.size() > 0;
    }
 
    private boolean has(BlockPos pos) {
