@@ -28,8 +28,14 @@ public class ProfessionOverrideMixin {
             cancellable = true
     )
     private void setProfession(VillagerProfession profession, CallbackInfoReturnable<VillagerData> cir) {
-        if (profession.getName().equals("farmer")) {
-            cir.setReturnValue(new VillagerData(type, VillagerManager.NEWFARMER.get(), level));
+        String profName = profession.getName();
+
+        if (!profName.equals("none")) {
+            VillagerProfession override = VillagerManager.overrideMap.get("new" + profName).get();
+
+            if (override != null) {
+                cir.setReturnValue(new VillagerData(type, override, level));
+            }
         }
     }
 }
