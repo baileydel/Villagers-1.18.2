@@ -11,11 +11,17 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.server.Main;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.storage.LevelStorageException;
+import net.minecraft.world.level.storage.LevelStorageSource;
+import net.minecraft.world.level.storage.LevelSummary;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -28,6 +34,8 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,12 +51,43 @@ import static com.delke.villagers.client.rendering.NewVillagerModel.*;
 public class ClientEvents {
     private final Map<Villager, VillagerDebugger> debuggers = new HashMap<>();
 
+    @Nullable
+    private List<LevelSummary> cachedList;
+
 
     //TODO Extract GUI Mod
+    boolean v = false;
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void OverrideMainMenu(ScreenEvent.InitScreenEvent event) {
+
         if (event.getScreen() instanceof TitleScreen) {
             Minecraft.getInstance().setScreen(new MainScreen());
+
+            LevelStorageSource levelstoragesource = Minecraft.getInstance().getLevelSource();
+            if (this.cachedList == null) {
+                try {
+                    this.cachedList = levelstoragesource.getLevelList();
+                }
+                catch (LevelStorageException levelstorageexception) {
+                    return;
+                }
+
+                Collections.sort(this.cachedList);
+            }
+
+            if (!this.cachedList.isEmpty() && !v) {
+                LevelSummary t = cachedList.get(0);
+                loadWorld(t);
+                v = true;
+            }
+        }
+    }
+
+    private void loadWorld(LevelSummary summary) {
+        Minecraft mc = Minecraft.getInstance();
+        mc.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.EVOKER_CAST_SPELL, 1.0F));
+        if (mc.getLevelSource().levelExists(summary.getLevelId())) {
+            mc.loadLevel(summary.getLevelId());
         }
     }
 
