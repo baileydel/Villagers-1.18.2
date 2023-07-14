@@ -1,6 +1,7 @@
 package com.delke.villagers.villagers.profession;
 
 import com.delke.villagers.capability.ReputationProvider;
+import com.delke.villagers.villagers.behavior.Produce;
 import com.delke.villagers.villagers.behavior.ReactToReputation;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -20,6 +21,8 @@ import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -33,7 +36,59 @@ import static com.delke.villagers.villagers.VillagerManager.GUARD_POI;
  */
 public class Guard extends AbstractProfession {
     public Guard() {
-        super("guard", GUARD_POI.get(), ImmutableSet.of(), ImmutableSet.of(), SoundEvents.EVOKER_CAST_SPELL);
+        super("guard",
+                GUARD_POI.get(),
+                ImmutableSet.of(),
+                ImmutableSet.of(),
+                SoundEvents.EVOKER_CAST_SPELL
+        );
+    }
+
+    public ImmutableList<Pair<Integer, ? extends Behavior<? super Villager>>> getWorkCorePackage() {
+        List<Pair<Integer, ? extends Behavior<? super Villager>>> t = new ArrayList<Pair<Integer, ? extends Behavior<? super Villager>>>(List.of(
+                //Pair.of(2, new SetWalkTargetFromBlockMemory(MemoryModuleType.JOB_SITE, 0.5F, 9, 100, 1200)),
+
+                Pair.of(5, new RunOne<>(
+                        getRunOnePackage()
+                )),
+
+                getMinimalLookBehavior(),
+
+                Pair.of(99, new UpdateActivityFromSchedule())
+        ));
+
+        if (isProducer()) {
+            t.add(Pair.of(10, new ShowTradesToPlayer(400, 1600)));
+            t.add(Pair.of(10, new SetLookAndInteract(EntityType.PLAYER, 4)));
+        }
+
+        return ImmutableList.copyOf(t);
+    }
+
+    public List<Pair<Behavior<? super Villager>, Integer>> getRunOnePackage() {
+        //TODO make this more advanced
+
+        // Every Villager will go to their work site.
+        List<Pair<Behavior<? super Villager>, Integer>> t = new ArrayList<>(List.of(
+                //Pair.of(new StrollToPoi(MemoryModuleType.JOB_SITE, 0.4F, 2, 10), 5)
+        ));
+
+        t.addAll(getWorkPOIBehaviorPackage());
+
+        // Every Producer will produce
+        if (isProducer()) {
+            t.add(Pair.of(new Produce(), 1));
+        }
+
+        // Any additional behaviors
+        t.addAll(getSecondWorkPackage());
+
+        return t;
+    }
+
+    @Override
+    public Pair<Behavior<? super Villager>, Integer> getWorkPOIBehavior() {
+        return Pair.of(new WorkAtPoi(), 7);
     }
 
     @Override
@@ -44,7 +99,7 @@ public class Guard extends AbstractProfession {
                 Pair.of(0, new InteractWithDoor()),
                 Pair.of(0, new LookAtTargetSink(45, 90)),
                 Pair.of(0, new WakeUp()),
-                Pair.of(0, new ReactToBell()),
+
                 Pair.of(0, new SetRaidStatus()),
                 Pair.of(0, new ValidateNearbyPoi(getJobPoiType(), MemoryModuleType.JOB_SITE)),
                 Pair.of(0, new ValidateNearbyPoi(getJobPoiType(), MemoryModuleType.POTENTIAL_JOB_SITE)),
