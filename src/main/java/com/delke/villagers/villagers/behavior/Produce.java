@@ -31,19 +31,22 @@ public class Produce extends Behavior<Villager> {
     private final List<TagKey<Item>> acceptedTags = new ArrayList<>();
 
     public Produce() {
-        super(ImmutableMap.of());
+        super(ImmutableMap.of(
+
+        ));
     }
 
     //TODO if the villager even has space? if not, it will need to make some
     protected boolean checkExtraStartConditions(@NotNull ServerLevel level, @NotNull Villager villager) {
         AbstractProfession profession =  (AbstractProfession) villager.getVillagerData().getProfession();
-        ImmutableList<Item> items = profession.getProducibleItems();
+        ImmutableList<ItemStack> items = profession.getProducibleItems();
 
         if (profession.isProducer() && items.size() > 0) {
             List<CraftingRecipe> optional = level.getServer().getRecipeManager().getAllRecipesFor(RecipeType.CRAFTING);
 
             //TODO using map methods, instead of using for loops is the best option here, but this is a plan of attack ig
-            for (Item producible : items) {
+            for (ItemStack stack : items) {
+                Item producible = stack.getItem();
                 for (CraftingRecipe recipe : optional) {
                     if (recipe.getId().equals(producible.getRegistryName())) {
                         this.recipe = recipe;
@@ -55,8 +58,8 @@ public class Produce extends Behavior<Villager> {
                             ItemStack[] ing = ingredient.getItems();
 
                             for (int i = 0; i < ing.length; i++) {
-                                ItemStack stack = ing[i];
-                                List<TagKey<Item>> l = stack.getTags().toList();
+                                ItemStack stack1 = ing[i];
+                                List<TagKey<Item>> l = stack1.getTags().toList();
 
                                 if (l.size() > 0 && ing.length > 1 && i > 0) {
                                     if (!acceptedTags.contains(l.get(0))) {
@@ -65,20 +68,20 @@ public class Produce extends Behavior<Villager> {
                                     break;
                                 }
 
-                                int c = stack.getCount();
-                                if (itemMap.containsKey(stack.getItem())) {
-                                    c += itemMap.get(stack.getItem());
+                                int c = stack1.getCount();
+                                if (itemMap.containsKey(stack1.getItem())) {
+                                    c += itemMap.get(stack1.getItem());
                                 }
-                                itemMap.put(stack.getItem().asItem(), c);
+                                itemMap.put(stack1.getItem().asItem(), c);
                             }
                         }
 
                         int satisfies = 0;
                         for (int i = 0; i < villager.getInventory().getContainerSize(); i++) {
-                            ItemStack stack = villager.getInventory().getItem(i);
+                            ItemStack stack1 = villager.getInventory().getItem(i);
 
-                            if (itemMap.containsKey(stack.getItem())) {
-                                if (stack.getCount() >= itemMap.get(stack.getItem())) {
+                            if (itemMap.containsKey(stack1.getItem())) {
+                                if (stack1.getCount() >= itemMap.get(stack1.getItem())) {
                                     satisfies++;
                                 }
                             }
@@ -123,7 +126,7 @@ public class Produce extends Behavior<Villager> {
     protected void stop(@NotNull ServerLevel level, @NotNull Villager villager, long time) {}
 
 
-    //TODO when you have like a exact amount and when you craft an item, there will be a space because all of the resources are used.
+    //TODO when you have like an exact amount and when you craft an item, there will be a space because all of the resources are used.
 
     // This is going to check if there is at least 1 space available.
     private boolean hasSpace(SimpleContainer villagerInventory) {
