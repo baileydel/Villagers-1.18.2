@@ -12,9 +12,7 @@ import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraftforge.client.event.RenderNameplateEvent;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author Bailey Delker
@@ -44,25 +42,24 @@ public class VillagerDebugger {
 
             Matrix4f matrix4f = stack.last().pose();
             Font font = Minecraft.getInstance().font;
+            Brain<Villager> brain = villager.getBrain();
 
             float y = 17;
-            List<String> h = new ArrayList<>();
-            Brain<Villager> brain = villager.getBrain();
-            for (Behavior<? super Villager> behavior: brain.getRunningBehaviors().stream().toList()) {
+
+            List<String> list = new ArrayList<>();
+            for (Behavior<? super Villager> behavior : brain.getRunningBehaviors()) {
                 if (brain.getRunningBehaviors().size() > 0 && behavior.toString().contains("DoNothing")) {
                     continue;
                 }
 
                 String[] ar = behavior.toString().split(": ");
-                String an = ar[ar.length - 1].replace("[", "").replace("]", "");
+                String text = ar[ar.length - 1].replace("[", "").replace("]", "");
 
-                if (an.length() > 0) {
-                    if (!h.contains(an)) {
-                        h.add(an);
+                if (text.length() > 0 && !list.contains(text)) {
+                    list.add(text);
 
-                        font.drawInBatch(new TranslatableComponent(an), (-font.width(an) / 2F) + 70, y, -1, false, matrix4f, source, false, 1056964608, 0xFFFFFF);
-                        y += font.lineHeight + 2;
-                    }
+                    font.drawInBatch(new TranslatableComponent(text), (-font.width(text) / 2F), y - 12, -1, false, matrix4f, source, false, 1056964608, 0xFFFFFF);
+                    y -= font.lineHeight + 2;
                 }
             }
 
@@ -76,6 +73,7 @@ public class VillagerDebugger {
             stack.popPose();
         }
     }
+
 
     private UUID getUUID() {
         return this.uuid;
