@@ -1,0 +1,8 @@
+Villagers poi's will produce items,
+    The poi's will have a map of the villager profession, and the items it can produce
+    Or the villager contains a list of items it can produce, but the poi determines if it can accept the villager to produce items.
+
+    But the downside of this is redudant code, like a tool smith and weapon smith, and armor smith all have similar items,
+    need similar materials, so all might need to produce those similar materials in order to produce their final product
+
+    
