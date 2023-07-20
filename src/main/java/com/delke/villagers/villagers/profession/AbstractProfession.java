@@ -3,6 +3,7 @@ package com.delke.villagers.villagers.profession;
 import com.delke.villagers.villagers.OverrideBrain;
 import com.delke.villagers.villagers.behavior.Produce;
 import com.delke.villagers.villagers.behavior.ReactToReputation;
+import com.delke.villagers.villagers.behavior.TradeForItem;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -62,9 +63,9 @@ public class AbstractProfession extends VillagerProfession {
 
     public ImmutableList<Pair<Integer, ? extends Behavior<? super Villager>>> getWorkCorePackage() {
         List<Pair<Integer, ? extends Behavior<? super Villager>>> t = new ArrayList<Pair<Integer, ? extends Behavior<? super Villager>>>(List.of(
-                Pair.of(2, new SetWalkTargetFromBlockMemory(MemoryModuleType.JOB_SITE, 0.5F, 9, 100, 1200)),
+                //Pair.of(98, new SetWalkTargetFromBlockMemory(MemoryModuleType.JOB_SITE, 0.5F, 9, 100, 1200)),
 
-                Pair.of(5, new RunOne<>(
+                Pair.of(1, new RunOne<>(
                         getRunOnePackage()
                 )),
 
@@ -72,11 +73,6 @@ public class AbstractProfession extends VillagerProfession {
 
                 Pair.of(99, new UpdateActivityFromSchedule())
         ));
-
-        if (isProducer()) {
-            t.add(Pair.of(10, new ShowTradesToPlayer(400, 1600)));
-            t.add(Pair.of(10, new SetLookAndInteract(EntityType.PLAYER, 4)));
-        }
 
         return ImmutableList.copyOf(t);
     }
@@ -88,6 +84,7 @@ public class AbstractProfession extends VillagerProfession {
      */
     public List<Pair<Behavior<? super Villager>, Integer>> getWorkPOIBehaviorPackage() {
         return new ArrayList<>(List.of(
+                Pair.of(new StrollToPoi(MemoryModuleType.JOB_SITE, 0.4F, 2, 10), 5),
                 getWorkPOIBehavior(),
                 Pair.of(new StrollAroundPoi(MemoryModuleType.JOB_SITE, 0.4F, 4), 6),
                 Pair.of(new StrollToPoiList(MemoryModuleType.SECONDARY_JOB_SITE, 0.5F, 1, 6, MemoryModuleType.JOB_SITE), 9)
@@ -113,16 +110,19 @@ public class AbstractProfession extends VillagerProfession {
         //TODO make this more advanced
 
         // Every Villager will go to their work site.
-        List<Pair<Behavior<? super Villager>, Integer>> t = new ArrayList<>(List.of(
-                Pair.of(new StrollToPoi(MemoryModuleType.JOB_SITE, 0.4F, 2, 10), 5)
-        ));
 
-        t.addAll(getWorkPOIBehaviorPackage());
+        List<Pair<Behavior<? super Villager>, Integer>> t = new ArrayList<>(
+                getWorkPOIBehaviorPackage()
+        );
 
         // Every Producer will produce
         if (isProducer()) {
            t.add(Pair.of(new Produce(), 1));
+           t.add(Pair.of(new ShowTradesToPlayer(400, 1600), 99));
+           t.add(Pair.of(new SetLookAndInteract(EntityType.PLAYER, 4), 99));
         }
+
+        t.add(Pair.of(new TradeForItem(), 1001));
 
         // Any additional behaviors
         t.addAll(getSecondWorkPackage());

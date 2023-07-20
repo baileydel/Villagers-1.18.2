@@ -1,19 +1,19 @@
 package com.delke.villagers.villagers.profession.override;
 
-import com.delke.villagers.villagers.behavior.TradeForItem;
-import com.delke.villagers.villagers.behavior.TillFarmland;
+
+import com.delke.villagers.villagers.behavior.farmer.HarvestCrops;
+import com.delke.villagers.villagers.behavior.farmer.TillFarmland;
 import com.delke.villagers.villagers.profession.AbstractProfession;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.ai.behavior.Behavior;
-import net.minecraft.world.entity.ai.behavior.HarvestFarmland;
+
 import net.minecraft.world.entity.ai.behavior.UseBonemeal;
 import net.minecraft.world.entity.ai.behavior.WorkAtComposter;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
@@ -43,10 +43,9 @@ public class NewFarmer extends AbstractProfession {
     @Override
     public List<Pair<Behavior<? super Villager>, Integer>> getSecondWorkPackage() {
         return ImmutableList.of(
-                Pair.of(new TillFarmland(), 1),
-                Pair.of(new HarvestFarmland(), 2),
-                Pair.of(new UseBonemeal(), 4),
-                Pair.of(new TradeForItem(), 1)
+                Pair.of(new TillFarmland(), 10),
+                Pair.of(new HarvestCrops(), 5),
+                Pair.of(new UseBonemeal(), 4)
         );
     }
 

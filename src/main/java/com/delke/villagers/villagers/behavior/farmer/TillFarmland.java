@@ -1,4 +1,4 @@
-package com.delke.villagers.villagers.behavior;
+package com.delke.villagers.villagers.behavior.farmer;
 
 import com.delke.villagers.villagers.VillagerManager;
 import com.google.common.collect.ImmutableMap;
@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.ai.behavior.Behavior;
+import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.behavior.BlockPosTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
@@ -34,43 +35,6 @@ public class TillFarmland extends Behavior<Villager> {
                       MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT
               )
       );
-   }
-
-   protected void start(@NotNull ServerLevel level, @NotNull Villager villager, long time) {
-      if (this.waterSource != null && tillableDirt.size() > 0) {
-         //BehaviorUtils.setWalkAndLookTargetMemories(villager, tillableDirt.get(0), 0.5F, 1);
-         BlockPosTracker pos = new BlockPosTracker(tillableDirt.get(0));
-         villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, pos);
-         villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, 0.5F, 1));
-      }
-   }
-
-   protected void tick(@NotNull ServerLevel level, @NotNull Villager villager, long time) {
-      if (tillableDirt.size() > 0) {
-         BlockPos dirt = tillableDirt.get(0);
-
-         if (dirt.closerToCenterThan(villager.position(), 1.5D)) {
-            level.playSound(null, dirt, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
-            level.setBlock(dirt, Blocks.FARMLAND.defaultBlockState(), 3);
-
-            tillableDirt.remove(0);
-
-            if (tillableDirt.size() > 0) {
-               dirt = tillableDirt.get(0);
-               BlockPosTracker tracker = new BlockPosTracker(dirt);
-               villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(tracker, 0.5F, 1));
-               villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, tracker);
-            }
-         }
-      }
-      timeWorked++;
-   }
-
-   protected void stop(@NotNull ServerLevel level, @NotNull Villager villager, long time) {
-      villager.getBrain().eraseMemory(MemoryModuleType.LOOK_TARGET);
-      villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
-      tillableDirt.clear();
-      timeWorked = 0;
    }
 
    protected boolean checkExtraStartConditions(@NotNull ServerLevel level, @NotNull Villager villager) {
@@ -130,6 +94,39 @@ public class TillFarmland extends Behavior<Villager> {
          }
       }
       return f && tillableDirt.size() > 0;
+   }
+
+   protected void start(@NotNull ServerLevel level, @NotNull Villager villager, long time) {
+      if (this.waterSource != null && tillableDirt.size() > 0) {
+         BehaviorUtils.setWalkAndLookTargetMemories(villager, tillableDirt.get(0), 0.5F, 1);
+      }
+   }
+
+   protected void tick(@NotNull ServerLevel level, @NotNull Villager villager, long time) {
+      if (tillableDirt.size() > 0) {
+         BlockPos dirt = tillableDirt.get(0);
+
+         if (dirt.closerToCenterThan(villager.position(), 1.5D)) {
+            level.playSound(null, dirt, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
+            level.setBlock(dirt, Blocks.FARMLAND.defaultBlockState(), 3);
+
+            tillableDirt.remove(0);
+
+            if (tillableDirt.size() > 0) {
+               dirt = tillableDirt.get(0);
+
+               BehaviorUtils.setWalkAndLookTargetMemories(villager, dirt, 0.5F, 1);
+            }
+         }
+      }
+      timeWorked++;
+   }
+
+   protected void stop(@NotNull ServerLevel level, @NotNull Villager villager, long time) {
+      villager.getBrain().eraseMemory(MemoryModuleType.LOOK_TARGET);
+      villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+      tillableDirt.clear();
+      timeWorked = 0;
    }
 
    private boolean has(BlockPos pos) {

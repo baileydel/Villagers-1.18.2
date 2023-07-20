@@ -1,4 +1,4 @@
-package com.delke.villagers.villagers.behavior;
+package com.delke.villagers.villagers.behavior.sherpherd;
 
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.server.level.ServerLevel;

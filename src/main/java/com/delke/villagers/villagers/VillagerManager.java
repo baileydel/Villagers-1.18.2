@@ -6,6 +6,7 @@ import com.delke.villagers.villagers.profession.override.NewShepherd;
 import com.delke.villagers.villagers.profession.Guard;
 import com.delke.villagers.villagers.profession.override.NewFarmer;
 import com.delke.villagers.villagers.profession.override.NewToolsmith;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.entity.npc.VillagerProfession;
@@ -45,7 +46,7 @@ public class VillagerManager {
 
     public static final DeferredRegister<MemoryModuleType<?>> VILLAGER_MEMORIES = DeferredRegister.create(ForgeRegistries.MEMORY_MODULE_TYPES, ExampleMod.MOD_ID);
     public static final RegistryObject<MemoryModuleType<ItemStack>> NEED_ITEM = VILLAGER_MEMORIES.register("neededitem", () -> new MemoryModuleType<>(Optional.empty()));
-
+    public static final RegistryObject<MemoryModuleType<LivingEntity>> TRADING_ENTITY = VILLAGER_MEMORIES.register("tradingentity", () -> new MemoryModuleType<>(Optional.empty()));
 
     static RegistryObject<VillagerProfession> registerOverride(String name, VillagerProfession profession) {
         RegistryObject<VillagerProfession> pr = VILLAGER_PROFESSIONS.register(name, () -> profession);

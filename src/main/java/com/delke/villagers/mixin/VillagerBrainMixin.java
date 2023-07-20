@@ -59,7 +59,8 @@ public abstract class VillagerBrainMixin {
             MemoryModuleType.LAST_WOKEN,
             MemoryModuleType.LAST_WORKED_AT_POI,
             MemoryModuleType.GOLEM_DETECTED_RECENTLY,
-            VillagerManager.NEED_ITEM.get()
+            VillagerManager.NEED_ITEM.get(),
+            VillagerManager.TRADING_ENTITY.get()
     );
 
 
