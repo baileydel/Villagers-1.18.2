@@ -25,7 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * @project Villagers-1.18.2
  */
 @Mixin(Villager.class)
-public abstract class VillagerBrainMixin {
+public abstract class VillagerMixin {
 
     @Shadow public abstract VillagerData getVillagerData();
 
