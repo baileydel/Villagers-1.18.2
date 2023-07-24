@@ -1,6 +1,7 @@
 package com.delke.villagers.villagers.behavior.farmer;
 
 import com.delke.villagers.villagers.VillagerManager;
+import com.delke.villagers.villagers.VillagerUtil;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -13,6 +14,7 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
@@ -38,23 +40,16 @@ public class TillFarmland extends Behavior<Villager> {
    }
 
    protected boolean checkExtraStartConditions(@NotNull ServerLevel level, @NotNull Villager villager) {
-      boolean f = false;
-
       // Search for hoe
-      for (int i = 0; i < villager.getInventory().getContainerSize(); i++) {
-         ItemStack stack = villager.getInventory().getItem(i);
-
-         if (stack.is(Items.WOODEN_HOE)) {
-            f = true;
-         }
-      }
+      boolean f = VillagerUtil.getMatchingClass(villager, HoeItem.class) != ItemStack.EMPTY;
 
       if (!f) {
          villager.getBrain().setMemory(VillagerManager.NEED_ITEM.get(), new ItemStack(Items.WOODEN_HOE));
          System.out.println("cannot find hoe, going to request");
+         return false;
       }
 
-      if (f && tillableDirt.size() == 0) {
+      if (tillableDirt.size() == 0) {
          BlockPos.MutableBlockPos blockPos = villager.blockPosition().mutable();
          boolean found = false;
 
@@ -82,18 +77,20 @@ public class TillFarmland extends Behavior<Villager> {
                   blockPos.set(waterSource.getX() + x , waterSource.getY(), waterSource.getZ() + z);
                   BlockState state = level.getBlockState(blockPos);
 
-                  if (state.is(Blocks.DIRT) && !state.is(Blocks.FARMLAND)) {
-                     BlockState above = level.getBlockState(blockPos.above());
+                  if (!tillableDirt.contains(blockPos)) {
+                     if (state.is(Blocks.DIRT) && !state.is(Blocks.FARMLAND)) {
+                        BlockState above = level.getBlockState(blockPos.above());
 
-                     if (above.is(Blocks.AIR) && !has(blockPos)) {
-                        tillableDirt.add(new BlockPos(blockPos));
+                        if (above.is(Blocks.AIR)) {
+                           tillableDirt.add(new BlockPos(blockPos));
+                        }
                      }
                   }
                }
             }
          }
       }
-      return f && tillableDirt.size() > 0;
+      return tillableDirt.size() > 0;
    }
 
    protected void start(@NotNull ServerLevel level, @NotNull Villager villager, long time) {
@@ -127,18 +124,6 @@ public class TillFarmland extends Behavior<Villager> {
       villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
       tillableDirt.clear();
       timeWorked = 0;
-   }
-
-   private boolean has(BlockPos pos) {
-      for (BlockPos blockPos : tillableDirt) {
-         String o = blockPos.toShortString();
-         String t = pos.toShortString();
-
-         if (o.equals(t)) {
-            return true;
-         }
-      }
-      return false;
    }
 
    protected boolean canStillUse(@NotNull ServerLevel level, @NotNull Villager villager, long p_23206_) {
