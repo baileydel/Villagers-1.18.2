@@ -1,6 +1,6 @@
 package com.delke.villagers.villagers.profession.override;
 
-import com.delke.villagers.villagers.behavior.sherpherd.ShearSheep;
+import com.delke.villagers.villagers.behavior.shepherd.ShearSheep;
 import com.delke.villagers.villagers.profession.AbstractProfession;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
