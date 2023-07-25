@@ -5,7 +5,7 @@
   "mixins": [
     "AbstractVillagerMixin",
     "ProfessionOverrideMixin",
-    "VillagerBrainMixin"
+    "VillagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
