@@ -4,6 +4,7 @@ import com.delke.villagers.villagers.VillagerManager;
 import net.minecraft.world.entity.npc.VillagerData;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerType;
+import net.minecraftforge.registries.RegistryObject;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -31,9 +32,11 @@ public class ProfessionOverrideMixin {
         String profName = profession.getName();
 
         if (!profName.equals("none")) {
-            VillagerProfession override = VillagerManager.overrideMap.get("new" + profName).get();
+            RegistryObject<VillagerProfession> reg = VillagerManager.overrideMap.get("new" + profName);
 
-            if (override != null) {
+            if (reg != null) {
+                VillagerProfession override = reg.get();
+
                 cir.setReturnValue(new VillagerData(type, override, level));
             }
         }
