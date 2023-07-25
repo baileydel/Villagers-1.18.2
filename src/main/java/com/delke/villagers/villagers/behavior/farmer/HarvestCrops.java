@@ -1,30 +1,36 @@
 package com.delke.villagers.villagers.behavior.farmer;
 
+import com.delke.villagers.villagers.VillagerUtil;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.IPlantable;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.ForgeEventFactory;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Set;
 
 public class HarvestCrops extends Behavior<Villager> {
-    @Nullable
-    private BlockPos currentBlock;
-
     private final List<BlockPos> validFarmland = Lists.newArrayList();
+    private BlockPos currentBlock;
 
     public HarvestCrops() {
         super(ImmutableMap.of(
@@ -36,148 +42,116 @@ public class HarvestCrops extends Behavior<Villager> {
 
     protected boolean checkExtraStartConditions(@NotNull ServerLevel level, @NotNull Villager villager) {
         if (ForgeEventFactory.getMobGriefingEvent(level, villager)) {
-            this.validFarmland.clear();
+            validFarmland.clear();
 
-            BlockPos.MutableBlockPos blockPos = villager.blockPosition().mutable();
+            BlockPos.MutableBlockPos pos = villager.blockPosition().mutable();
 
-            for (int x = -2; x <= 2; ++x) {
-                for (int y = -1; y <= 1; ++y) {
-                    for (int z = -2; z <= 2; ++z) {
-
-                        BlockState state = level.getBlockState(blockPos);
+            for (int x = -3; x <= 3; x++) {
+                for (int y = -1; y <= 1; y++) {
+                    for (int z = -3; z <= 3; z++) {
+                        BlockState state = level.getBlockState(pos);
 
                         if (state.is(Blocks.FARMLAND)) {
-                            this.validFarmland.add(new BlockPos(blockPos));
+                            BlockState above = level.getBlockState(pos.above());
+
+                            boolean add = false;
+                            if (above.is(BlockTags.CROPS)) {
+                                CropBlock crop_block = (CropBlock) above.getBlock();
+                                add = crop_block.isMaxAge(above);
+                            }
+
+                            if (add || (above.isAir() && VillagerUtil.hasMatchingItemTag(villager, Tags.Items.SEEDS))) {
+                                this.validFarmland.add(new BlockPos(pos));
+                            }
                         }
-
-                        blockPos.set(villager.getX() + x, villager.getY() + y, villager.getZ() + z);
-                    }
-                }
-            }
-
-            if (validFarmland.size() > 0) {
-                for (BlockPos pos : validFarmland) {
-                    BlockState crop = level.getBlockState(pos.above());
-
-                    // If block is empty
-                    // and villager has seeds, then plant
-                    if (crop.is(Blocks.AIR) && villager.getInventory().hasAnyOf(Set.of(Items.WHEAT_SEEDS))) {
-                        currentBlock = pos;
-                        return true;
-                    }
-                    else if (crop.is(BlockTags.CROPS)) {
-                        currentBlock = pos.above();
-                        return true;
+                        pos.set(villager.getX() + x, villager.getY() + y, villager.getZ() + z);
                     }
                 }
             }
         }
-        return false;
+        return validFarmland.size() > 0;
     }
 
+    protected void start(@NotNull ServerLevel level, @NotNull Villager villager, long time) {
+        if (validFarmland.size() > 0) {
+            for (BlockPos pos : validFarmland) {
+                BlockState crop = level.getBlockState(pos.above());
 
-    protected void start(@NotNull ServerLevel level, @NotNull Villager villager, long cur_time) {
+                if (crop.is(Blocks.AIR) && VillagerUtil.hasMatchingItemTag(villager, Tags.Items.SEEDS)) {
+                    currentBlock = pos;
+                }
+                else if (crop.is(BlockTags.CROPS)) {
+                    CropBlock crop_block = (CropBlock)crop.getBlock();
+
+                    if (crop_block.isMaxAge(crop)) {
+                        currentBlock = pos;
+                    }
+                }
+            }
+        }
+
         if (currentBlock != null) {
             BehaviorUtils.setWalkAndLookTargetMemories(villager, currentBlock, 0.5F, 1);
         }
     }
 
+    protected void tick(@NotNull ServerLevel level, @NotNull Villager villager, long time) {
+        if (currentBlock != null) {
+            if (validFarmland.size() > 0 && currentBlock.closerToCenterThan(villager.position(), 1.5D)) {
+                currentBlock = currentBlock.above();
 
-    protected void tick(@NotNull ServerLevel level, @NotNull Villager villager, long p_22553_) {
-        if (validFarmland.size() > 0) {
-            BehaviorUtils.setWalkAndLookTargetMemories(villager, currentBlock, 0.5F, 1);
-        }
+                BlockState state = level.getBlockState(currentBlock);
 
+                if (state.is(BlockTags.CROPS)) {
+                    CropBlock crop = (CropBlock)state.getBlock();
 
-
-        /*
-        if (tillableDirt.size() > 0) {
-         BlockPos dirt = tillableDirt.get(0);
-
-         if (dirt.closerToCenterThan(villager.position(), 1.5D)) {
-            level.playSound(null, dirt, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
-            level.setBlock(dirt, Blocks.FARMLAND.defaultBlockState(), 3);
-
-            tillableDirt.remove(0);
-
-            if (tillableDirt.size() > 0) {
-               dirt = tillableDirt.get(0);
-
-               BehaviorUtils.setWalkAndLookTargetMemories(villager, dirt, 0.5F, 1);
-            }
-         }
-      }
-
-        if (this.currentBlock == null || this.currentBlock.closerToCenterThan(villager.position(), 1.0D)) {
-            if (this.currentBlock != null && p_23198_ > this.nextOkStartTime) {
-                BlockState blockstate = level.getBlockState(this.currentBlock);
-                Block block = blockstate.getBlock();
-                Block block1 = level.getBlockState(this.currentBlock.below()).getBlock();
-
-                if (block instanceof CropBlock && ((CropBlock)block).isMaxAge(blockstate)) {
-                    level.destroyBlock(this.currentBlock, true, villager);
+                    if (crop.isMaxAge(state)) {
+                        level.destroyBlock(currentBlock, true);
+                    }
                 }
 
-                if (blockstate.isAir() && block1 instanceof FarmBlock && villager.hasFarmSeeds()) {
-                    SimpleContainer simplecontainer = villager.getInventory();
 
-                    for(int i = 0; i < simplecontainer.getContainerSize(); ++i) {
-                        ItemStack itemstack = simplecontainer.getItem(i);
-                        boolean flag = false;
-                        if (!itemstack.isEmpty()) {
-                            if (itemstack.is(Items.WHEAT_SEEDS)) {
-                                level.setBlock(this.currentBlock, Blocks.WHEAT.defaultBlockState(), 3);
-                                flag = true;
-                            } else if (itemstack.is(Items.POTATO)) {
-                                level.setBlock(this.currentBlock, Blocks.POTATOES.defaultBlockState(), 3);
-                                flag = true;
-                            } else if (itemstack.is(Items.CARROT)) {
-                                level.setBlock(this.currentBlock, Blocks.CARROTS.defaultBlockState(), 3);
-                                flag = true;
-                            } else if (itemstack.is(Items.BEETROOT_SEEDS)) {
-                                level.setBlock(this.currentBlock, Blocks.BEETROOTS.defaultBlockState(), 3);
-                                flag = true;
-                            } else if (itemstack.getItem() instanceof net.minecraftforge.common.IPlantable) {
-                                if (((net.minecraftforge.common.IPlantable)itemstack.getItem()).getPlantType(level, currentBlock) == PlantType.CROP) {
-                                    level.setBlock(currentBlock, ((net.minecraftforge.common.IPlantable)itemstack.getItem()).getPlant(level, currentBlock), 3);
-                                    flag = true;
+                SimpleContainer simplecontainer = villager.getInventory();
+                for (int i = 0; i < simplecontainer.getContainerSize(); ++i) {
+                    ItemStack itemstack = simplecontainer.getItem(i);
+
+                    if (!itemstack.isEmpty()) {
+                        Item item = itemstack.getItem();
+
+                        if (itemstack.is(Tags.Items.SEEDS) || item instanceof IPlantable) {
+                            if (item instanceof BlockItem blockItem) {
+                                Block block =  blockItem.getBlock();
+                                level.setBlock(currentBlock, block.defaultBlockState(), 3);
+                                level.playSound(null, currentBlock.getX(), currentBlock.getY(), currentBlock.getZ(), SoundEvents.CROP_PLANTED, SoundSource.BLOCKS, 1.0F, 1.0F);
+
+                                itemstack.shrink(1);
+                                if (itemstack.isEmpty()) {
+                                    simplecontainer.setItem(i, ItemStack.EMPTY);
                                 }
+
+                                if (validFarmland.size() > 0) {
+                                    validFarmland.remove(currentBlock.below());
+                                    if (validFarmland.size() > 0) {
+                                        currentBlock = validFarmland.get(0);
+                                        BehaviorUtils.setWalkAndLookTargetMemories(villager, currentBlock, 0.5F, 1);
+                                    }
+                                }
+                                break;
                             }
                         }
-
-                        if (flag) {
-                            level.playSound(null, this.currentBlock.getX(), this.currentBlock.getY(), this.currentBlock.getZ(), SoundEvents.CROP_PLANTED, SoundSource.BLOCKS, 1.0F, 1.0F);
-                            itemstack.shrink(1);
-                            if (itemstack.isEmpty()) {
-                                simplecontainer.setItem(i, ItemStack.EMPTY);
-                            }
-                            break;
-                        }
-                    }
-                }
-
-                if (block instanceof CropBlock && !((CropBlock)block).isMaxAge(blockstate)) {
-                    this.validFarmland.remove(this.currentBlock);
-                    this.currentBlock = this.getValidFarmland(level);
-                    if (this.currentBlock != null) {
-                        this.nextOkStartTime = p_23198_ + 20L;
-                        villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new BlockPosTracker(this.currentBlock), 0.5F, 1));
-                        villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(this.currentBlock));
                     }
                 }
             }
-            ++this.timeWorkedSoFar;
         }
-         */
     }
 
-    protected void stop(@NotNull ServerLevel level, Villager villager, long p_23190_) {
+    protected void stop(@NotNull ServerLevel level, Villager villager, long time) {
         villager.getBrain().eraseMemory(MemoryModuleType.LOOK_TARGET);
         villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
     }
 
     @Override
-    protected boolean canStillUse(ServerLevel p_22545_, Villager p_22546_, long p_22547_) {
-        return true;
+    protected boolean canStillUse(@NotNull ServerLevel level, @NotNull Villager villager, long time) {
+        return validFarmland.size() > 0;
     }
 }
