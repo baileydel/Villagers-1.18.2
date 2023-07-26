@@ -1,5 +1,6 @@
 package com.delke.villagers.client.debug;
 
+import com.delke.villagers.client.SearchDebugger;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
@@ -12,7 +13,9 @@ import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraftforge.client.event.RenderNameplateEvent;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * @author Bailey Delker
@@ -24,13 +27,15 @@ import java.util.*;
 public class VillagerDebugger {
     private final Villager villager;
     private final UUID uuid;
+    public SearchDebugger searchDebugger;
 
     public VillagerDebugger(Villager villager) {
         this.villager = villager;
         this.uuid = villager.getUUID();
+        this.searchDebugger = new SearchDebugger();
     }
 
-    public void render(RenderNameplateEvent event) {
+    public void renderInfo(RenderNameplateEvent event) {
         if (villager.isAlive()) {
             PoseStack stack = event.getPoseStack();
             MultiBufferSource source = event.getMultiBufferSource();

@@ -1,5 +1,6 @@
 package com.delke.villagers.villagers.behavior;
 
+import com.delke.villagers.villagers.VillagerManager;
 import com.delke.villagers.villagers.profession.AbstractProfession;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -31,9 +32,7 @@ public class Produce extends Behavior<Villager> {
     private final List<TagKey<Item>> acceptedTags = new ArrayList<>();
 
     public Produce() {
-        super(ImmutableMap.of(
-
-        ));
+        super(ImmutableMap.of());
     }
 
     //TODO if the villager even has space? if not, it will need to make some
@@ -159,5 +158,9 @@ public class Produce extends Behavior<Villager> {
 
     protected boolean canStillUse(@NotNull ServerLevel level, @NotNull Villager villager, long p_23206_) {
         return !hasSpace(villager.getInventory());
+    }
+
+    public static boolean canProduce(ServerLevel level, Villager villager, ItemStack item) {
+        return false;
     }
 }

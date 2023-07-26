@@ -1,16 +1,15 @@
 package com.delke.villagers.villagers;
 
 import com.delke.villagers.ExampleMod;
-import com.delke.villagers.villagers.profession.AbstractProfession;
-import com.delke.villagers.villagers.profession.override.NewShepherd;
 import com.delke.villagers.villagers.profession.Guard;
+import com.delke.villagers.villagers.profession.LumberJack;
 import com.delke.villagers.villagers.profession.override.NewFarmer;
+import com.delke.villagers.villagers.profession.override.NewShepherd;
 import com.delke.villagers.villagers.profession.override.NewToolsmith;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.entity.npc.VillagerProfession;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -34,18 +33,21 @@ public class VillagerManager {
 
     public static final DeferredRegister<VillagerProfession> VILLAGER_PROFESSIONS = DeferredRegister.create(ForgeRegistries.PROFESSIONS, ExampleMod.MOD_ID);
     public static final RegistryObject<VillagerProfession> GUARD = VILLAGER_PROFESSIONS.register("guard", Guard::new);
+    public static final RegistryObject<VillagerProfession> LUMBERJACK = VILLAGER_PROFESSIONS.register("lumberjack", LumberJack::new);
 
     public static final RegistryObject<VillagerProfession> NEWFARMER = registerOverride("newfarmer", new NewFarmer());
     public static final RegistryObject<VillagerProfession> NEWSHEPHERD = registerOverride("newshepherd", new NewShepherd());
     public static final RegistryObject<VillagerProfession> NEWTOOLSMITH = registerOverride("newtoolsmith", new NewToolsmith());
 
-
     public static final DeferredRegister<PoiType> POI_TYPES = DeferredRegister.create(ForgeRegistries.POI_TYPES, ExampleMod.MOD_ID);
     public static final RegistryObject<PoiType> GUARD_POI = POI_TYPES.register("guard_poi", () -> new PoiType("guard", PoiType.getBlockStates(Blocks.WAXED_COPPER_BLOCK), 1, 1));
+    public static final RegistryObject<PoiType> LUMBERJACK_POI = POI_TYPES.register("lumberjack_poi", () -> new PoiType("lumberjack", PoiType.getBlockStates(Blocks.BEDROCK), 1, 1));
 
 
     public static final DeferredRegister<MemoryModuleType<?>> VILLAGER_MEMORIES = DeferredRegister.create(ForgeRegistries.MEMORY_MODULE_TYPES, ExampleMod.MOD_ID);
     public static final RegistryObject<MemoryModuleType<ItemStack>> NEED_ITEM = VILLAGER_MEMORIES.register("neededitem", () -> new MemoryModuleType<>(Optional.empty()));
+
+    //TODO Remove and put as interaction target
     public static final RegistryObject<MemoryModuleType<LivingEntity>> TRADING_ENTITY = VILLAGER_MEMORIES.register("tradingentity", () -> new MemoryModuleType<>(Optional.empty()));
 
     static RegistryObject<VillagerProfession> registerOverride(String name, VillagerProfession profession) {
@@ -57,6 +59,7 @@ public class VillagerManager {
     public static void registerPOIs() {
         try {
             ObfuscationReflectionHelper.findMethod(PoiType.class, "registerBlockStates", PoiType.class).invoke(null, GUARD_POI.get());
+            ObfuscationReflectionHelper.findMethod(PoiType.class, "registerBlockStates", PoiType.class).invoke(null, LUMBERJACK_POI.get());
         }
         catch (Exception e) {
             e.printStackTrace();

@@ -8,9 +8,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -69,9 +67,9 @@ public class AbstractProfession extends VillagerProfession {
                         getRunOnePackage()
                 )),
 
-                getMinimalLookBehavior(),
+                getMinimalLookBehavior()
 
-                Pair.of(99, new UpdateActivityFromSchedule())
+                //Pair.of(99, new UpdateActivityFromSchedule())
         ));
 
         return ImmutableList.copyOf(t);
@@ -84,10 +82,10 @@ public class AbstractProfession extends VillagerProfession {
      */
     public List<Pair<Behavior<? super Villager>, Integer>> getWorkPOIBehaviorPackage() {
         return new ArrayList<>(List.of(
-                Pair.of(new StrollToPoi(MemoryModuleType.JOB_SITE, 0.4F, 2, 10), 5),
-                getWorkPOIBehavior(),
-                Pair.of(new StrollAroundPoi(MemoryModuleType.JOB_SITE, 0.4F, 4), 6),
-                Pair.of(new StrollToPoiList(MemoryModuleType.SECONDARY_JOB_SITE, 0.5F, 1, 6, MemoryModuleType.JOB_SITE), 9)
+                Pair.of(new StrollToPoi(MemoryModuleType.JOB_SITE, 0.4F, 2, 10), 5)
+                //getWorkPOIBehavior()
+                //Pair.of(new StrollAroundPoi(MemoryModuleType.JOB_SITE, 0.4F, 4), 6),
+                //Pair.of(new StrollToPoiList(MemoryModuleType.SECONDARY_JOB_SITE, 0.5F, 1, 6, MemoryModuleType.JOB_SITE), 9)
         ));
     }
 
@@ -117,9 +115,9 @@ public class AbstractProfession extends VillagerProfession {
 
         // Every Producer will produce
         if (isProducer()) {
-           t.add(Pair.of(new Produce(), 1));
-           t.add(Pair.of(new ShowTradesToPlayer(400, 1600), 99));
-           t.add(Pair.of(new SetLookAndInteract(EntityType.PLAYER, 4), 99));
+           t.add(Pair.of(new Produce(), 100));
+           //t.add(Pair.of(new ShowTradesToPlayer(400, 1600), 1));
+           //t.add(Pair.of(new SetLookAndInteract(EntityType.PLAYER, 4), 1));
         }
 
         t.add(Pair.of(new TradeForItem(), 1001));
@@ -210,10 +208,10 @@ public class AbstractProfession extends VillagerProfession {
                 ),
                 Pair.of(3, new GiveGiftToHero(100)),
                 Pair.of(3, new SetLookAndInteract(EntityType.PLAYER, 4)),
-                Pair.of(3, new GateBehavior<>(ImmutableMap.of(),
+                /*Pair.of(3, new GateBehavior<>(ImmutableMap.of(),
                         ImmutableSet.of(MemoryModuleType.INTERACTION_TARGET), GateBehavior.OrderPolicy.ORDERED, GateBehavior.RunningPolicy.RUN_ONE,
                         ImmutableList.of(Pair.of(new TradeWithVillager(), 1)))
-                ),
+                ),*/
                 Pair.of(3,
                         new GateBehavior<>(ImmutableMap.of(), ImmutableSet.of(MemoryModuleType.BREED_TARGET), GateBehavior.OrderPolicy.ORDERED, GateBehavior.RunningPolicy.RUN_ONE,
                         ImmutableList.of(Pair.of(new VillagerMakeLove(), 1)))),
@@ -282,10 +280,10 @@ public class AbstractProfession extends VillagerProfession {
 
     protected Pair<Integer, Behavior<LivingEntity>> getMinimalLookBehavior() {
         return Pair.of(5, new RunOne<>(ImmutableList.of(
-                        Pair.of(new SetEntityLookTarget(EntityType.VILLAGER, 8.0F), 2),
+                        Pair.of(new SetEntityLookTarget(EntityType.VILLAGER, 3.0F), 2)
                         //Pair.of(new SetEntityLookTarget(EntityType.PLAYER, 8.0F), 2),
-                        Pair.of(new DoNothing(30, 60), 8))
-                )
+                        //Pair.of(new DoNothing(30, 60), 8))
+                ))
         );
     }
 }

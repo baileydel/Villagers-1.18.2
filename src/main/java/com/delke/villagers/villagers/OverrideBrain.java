@@ -122,11 +122,11 @@ public class OverrideBrain {
                         Pair.of(new JumpOnBed(0.5F), 1), Pair.of(new DoNothing(30, 60), 1)))
                 ),
                 Pair.of(3, new GiveGiftToHero(100)), Pair.of(3, new SetLookAndInteract(EntityType.PLAYER, 4)),
-                Pair.of(3, new GateBehavior<>(ImmutableMap.of(), ImmutableSet.of(MemoryModuleType.INTERACTION_TARGET), GateBehavior.OrderPolicy.ORDERED, GateBehavior.RunningPolicy.RUN_ONE,
+                /*Pair.of(3, new GateBehavior<>(ImmutableMap.of(), ImmutableSet.of(MemoryModuleType.INTERACTION_TARGET), GateBehavior.OrderPolicy.ORDERED, GateBehavior.RunningPolicy.RUN_ONE,
                         ImmutableList.of(
                                 Pair.of(new TradeWithVillager(), 1))
                         )
-                ),
+                ),*/
                 Pair.of(3, new GateBehavior<>(ImmutableMap.of(), ImmutableSet.of(MemoryModuleType.BREED_TARGET), GateBehavior.OrderPolicy.ORDERED, GateBehavior.RunningPolicy.RUN_ONE,
                         ImmutableList.of(
                                 Pair.of(new VillagerMakeLove(), 1))
@@ -149,11 +149,12 @@ public class OverrideBrain {
                 Pair.of(2, new SetWalkTargetFromBlockMemory(MemoryModuleType.MEETING_POINT, 0.5F, 6, 100, 200)),
                 Pair.of(3, new GiveGiftToHero(100)),
                 Pair.of(3, new ValidateNearbyPoi(PoiType.MEETING, MemoryModuleType.MEETING_POINT)),
-                Pair.of(3, new GateBehavior<>(
+                /*Pair.of(3, new GateBehavior<>(
                         ImmutableMap.of(),
                         ImmutableSet.of(MemoryModuleType.INTERACTION_TARGET), GateBehavior.OrderPolicy.ORDERED, GateBehavior.RunningPolicy.RUN_ONE,
-                        ImmutableList.of(Pair.of(new TradeWithVillager(), 1)))
-                ),
+                        //ImmutableList.of(Pair.of(new TradeWithVillager(), 1))
+                        )
+                ),*/
                 getFullLookBehavior(),
                 Pair.of(99, new UpdateActivityFromSchedule())
         );

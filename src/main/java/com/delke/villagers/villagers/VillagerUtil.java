@@ -1,17 +1,24 @@
 package com.delke.villagers.villagers;
 
+import net.minecraft.client.renderer.debug.DebugRenderer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.phys.AABB;
 
 /**
  * @author Bailey Delker
  * @created 07/21/2023 - 3:31 AM
  * @project Villagers-1.18.2
  */
+
+
 public class VillagerUtil {
+
+
 
     public static ItemStack getMatchingClass(Villager villager, Class<? extends Item> type) {
         SimpleContainer inv = villager.getInventory();

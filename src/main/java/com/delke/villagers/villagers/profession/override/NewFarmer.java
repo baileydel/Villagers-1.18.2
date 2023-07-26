@@ -43,8 +43,8 @@ public class NewFarmer extends AbstractProfession {
     @Override
     public List<Pair<Behavior<? super Villager>, Integer>> getSecondWorkPackage() {
         return ImmutableList.of(
-                Pair.of(new TillFarmland(), 10),
-                Pair.of(new HarvestCrops(), 5),
+                Pair.of(new TillFarmland(), 1),
+                Pair.of(new HarvestCrops(), 100),
                 Pair.of(new UseBonemeal(), 4)
         );
     }

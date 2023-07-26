@@ -1,0 +1,18 @@
+{
+  "menu.returnToMenu": "Quit",
+  "menu.game": "",
+  "menu.options": "Options",
+  "options.skinCustomisation": "Skin Customization",
+  "options.sounds": "Sounds",
+  "options.mouse_settings": "Mouse Settings",
+  "options.controls": "Controls",
+  "options.video": "Video Settings",
+  "options.language": "Language",
+  "options.resourcepack": "Resource Packs",
+  "options.online": "Online",
+  "options.multiplayer.title": "Multiplayer Settings",
+  "options.chat.title": "Chat Settings",
+  "options.accessibility.title": "Accessibility Settings",
+  "controls.keybinds": "Key Binds",
+  "menu.shareToLan": "LAN"
+}
