@@ -1,24 +1,28 @@
 package com.delke.villagers.villagers;
 
-import net.minecraft.client.renderer.debug.DebugRenderer;
+import com.delke.villagers.client.ClientEvents;
+import com.delke.villagers.client.debug.VillagerDebugger;
+import net.minecraft.core.BlockPos;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
-import net.minecraft.world.phys.AABB;
+
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Bailey Delker
  * @created 07/21/2023 - 3:31 AM
  * @project Villagers-1.18.2
  */
-
-
 public class VillagerUtil {
-
-
 
     public static ItemStack getMatchingClass(Villager villager, Class<? extends Item> type) {
         SimpleContainer inv = villager.getInventory();
@@ -53,7 +57,7 @@ public class VillagerUtil {
         return ItemStack.EMPTY;
     }
 
-    public static boolean hasItemStack(Villager villager, ItemStack compare) {
+    public static boolean hasItemStack(AbstractVillager villager, ItemStack compare) {
         SimpleContainer inv = villager.getInventory();
 
         for (int i = 0; i < inv.getContainerSize(); i++) {
@@ -66,5 +70,75 @@ public class VillagerUtil {
         return false;
     }
 
+    public static boolean hasEnoughOf(AbstractVillager villager, Item item, int count) {
+        return hasEnoughOf(villager, new ItemStack(item, count));
+    }
 
+    public static boolean hasEnoughOf(AbstractVillager villager, ItemStack item) {
+        SimpleContainer inv = villager.getInventory();
+
+        for (int i = 0; i < inv.getContainerSize(); i++) {
+            ItemStack stack = inv.getItem(i);
+
+            if (stack.is(item.getItem())) {
+                return (stack.getCount() - item.getCount()) >= 0;
+            }
+        }
+        return false;
+    }
+
+    //if there is no blockpos, then use villagers position
+    // add debug version of search
+
+    //TODO need to add predicate option.
+    public static List<BlockPos> searchBlocksWithinBox(@Nonnull Villager villager, List<Block> blocks, BoundingBox box) {
+        boolean isClient = !villager.getServer().isDedicatedServer();
+
+        if (isClient) {
+            VillagerDebugger debugger = ClientEvents.debuggers.get(villager);
+            debugger.searchDebugger.setArea(box);
+        }
+
+        List<BlockPos> list = new ArrayList<>();
+
+        for (int x = box.minX(); x < box.maxX(); x++) {
+            for (int y = box.minY(); y < box.maxY(); y++) {
+                for (int z = box.minZ(); z < box.maxZ(); z++) {
+                    BlockPos pos = new BlockPos(x, y, z);
+                    BlockState state = villager.level. getBlockState(pos);
+
+                    for (Block block : blocks) {
+                        if (state.is(block)) {
+                            list.add(pos);
+
+                            if (isClient) {
+                                VillagerDebugger debugger = ClientEvents.debuggers.get(villager);
+                                debugger.searchDebugger.addFound(pos);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
+    public static List<BlockPos> searchBlocksWithinBox(Villager villager, List<Block> blocks, BlockPos pos, int radius) {
+        return searchBlocksWithinBox(villager, blocks, new BoundingBox(pos).inflatedBy(radius));
+    }
+
+    public static List<BlockPos> searchBlocksWithin(Villager villager, List<Block> blocks, BlockPos pos, int yRadius, int radius) {
+        int minX = pos.getX() - radius;
+        int maxX = pos.getX() + radius + 1;
+
+        int minY = pos.getY() - yRadius;
+        int maxY = (pos.getY() + 1) + yRadius;
+
+        int minZ = pos.getZ() - radius;
+        int maxZ = pos.getZ() + radius + 1;
+
+        BoundingBox box = new BoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
+
+        return searchBlocksWithinBox(villager, blocks, box);
+    }
 }
