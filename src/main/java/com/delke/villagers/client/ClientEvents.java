@@ -13,7 +13,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
-import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -33,14 +32,12 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static com.delke.villagers.client.rendering.NewVillagerModel.*;
-import static net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_SKY;
 
 /**
  * @author Bailey Delker
@@ -49,33 +46,28 @@ import static net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_
  */
 @OnlyIn(Dist.CLIENT)
 public class ClientEvents {
-    private final Map<Villager, VillagerDebugger> debuggers = new HashMap<>();
+    public static final Map<Villager, VillagerDebugger> debuggers = new HashMap<>();
 
-    @Nullable
-    private List<LevelSummary> cachedList;
-
-    //TODO Extract GUI Mod
     boolean v = false;
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void OverrideMainMenu(ScreenEvent.InitScreenEvent event) {
-
+        List<LevelSummary> cachedList;
         // Autoload into world
         if (event.getScreen() instanceof TitleScreen) {
             Minecraft.getInstance().setScreen(new MainScreen());
 
             LevelStorageSource levelstoragesource = Minecraft.getInstance().getLevelSource();
-            if (this.cachedList == null) {
-                try {
-                    this.cachedList = levelstoragesource.getLevelList();
-                }
-                catch (LevelStorageException levelstorageexception) {
-                    return;
-                }
 
-                Collections.sort(this.cachedList);
+            try {
+                cachedList = levelstoragesource.getLevelList();
+            }
+            catch (LevelStorageException levelstorageexception) {
+                return;
             }
 
-            if (!this.cachedList.isEmpty() && !v) {
+            Collections.sort(cachedList);
+
+            if (!cachedList.isEmpty() && !v) {
                 LevelSummary t = cachedList.get(0);
                 loadWorld(t);
                 v = true;
@@ -97,11 +89,11 @@ public class ClientEvents {
 
     @SubscribeEvent
     public void RenderLevelStageEvent(RenderLevelStageEvent event) {
-
-        for (Map.Entry<Villager, VillagerDebugger> debuggerEntry : debuggers.entrySet()) {
-            debuggerEntry.getValue().searchDebugger.render(event.getPoseStack());
+        if (event.getStage().equals(RenderLevelStageEvent.Stage.AFTER_CUTOUT_BLOCKS)) {
+            for (Map.Entry<Villager, VillagerDebugger> debuggerEntry : debuggers.entrySet()) {
+                debuggerEntry.getValue().searchDebugger.render(event.getPoseStack());
+            }
         }
-
     }
 
     // Render the current time
