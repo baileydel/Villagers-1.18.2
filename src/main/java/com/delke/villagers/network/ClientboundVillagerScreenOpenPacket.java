@@ -25,10 +25,10 @@ public class ClientboundVillagerScreenOpenPacket {
       this.entityId = friendlyByteBuf.readInt();
    }
 
-   public void write(FriendlyByteBuf p_132206_) {
-      p_132206_.writeByte(this.containerId);
-      p_132206_.writeVarInt(this.size);
-      p_132206_.writeInt(this.entityId);
+   public void write(FriendlyByteBuf buf) {
+      buf.writeByte(this.containerId);
+      buf.writeVarInt(this.size);
+      buf.writeInt(this.entityId);
    }
 
    public static void handle(ClientboundVillagerScreenOpenPacket msg, Supplier<NetworkEvent.Context> ctx) {
