@@ -15,13 +15,11 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.memory.NearestVisibleLivingEntities;
 import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Predicate;
 
 /**
@@ -53,13 +51,11 @@ public class TradeForItem extends Behavior<Villager> {
         Brain<Villager> brain = villager.getBrain();
 
         // This only is true when another villager is setting the memory of a villager it is trying to trade with.
-        if (brain.getMemory(VillagerManager.TRADING_ENTITY.get()).isPresent()) {
-            targetVillager = brain.getMemory(VillagerManager.TRADING_ENTITY.get());
+        if (brain.getMemory(MemoryModuleType.INTERACTION_TARGET).isPresent()) {
+            targetVillager = brain.getMemory(MemoryModuleType.INTERACTION_TARGET);
             return true;
         }
 
-        //TODO see if they are able to produce the items first,
-        // see if they can currently produce it,
         if (targetVillager.isEmpty()) {
             NearestVisibleLivingEntities nearestvisiblelivingentities = brain.getMemory(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES).get();
 
@@ -68,15 +64,17 @@ public class TradeForItem extends Behavior<Villager> {
                         if (brain.getMemory(VillagerManager.NEED_ITEM.get()).isPresent()) {
 
                             if (entity instanceof Villager targetVillager) {
-                                ItemStack requestedItem = brain.getMemory(VillagerManager.NEED_ITEM.get()).get();
+                                if (targetVillager.getVillagerData().getProfession() instanceof AbstractProfession abstractProfession) {
+                                    ItemStack requestedItem = brain.getMemory(VillagerManager.NEED_ITEM.get()).get();
 
-                                for (ItemStack itemStack : ((AbstractProfession)targetVillager.getVillagerData().getProfession()).getProducibleItems()) {
-                                    if (itemStack.sameItem(requestedItem)) {
-                                        if (VillagerUtil.hasItemStack(targetVillager, requestedItem) || Produce.canProduce(level, targetVillager, requestedItem)) {
-                                            return true;
+                                    for (ItemStack itemStack : abstractProfession.getProducibleItems()) {
+                                        if (itemStack.sameItem(requestedItem)) {
+                                            if (VillagerUtil.hasItemStack(targetVillager, requestedItem) || Produce.canProduce(level, targetVillager, requestedItem)) {
+                                                return true;
+                                            }
                                         }
                                     }
-                               }
+                                }
                             }
                         }
                         return false;
@@ -86,6 +84,8 @@ public class TradeForItem extends Behavior<Villager> {
         }
         return false;
     }
+
+
 
     @Override
     protected void tick(@NotNull ServerLevel level, @NotNull Villager villager, long currentTime) {
@@ -98,11 +98,10 @@ public class TradeForItem extends Behavior<Villager> {
             // Start trading, as long as trading villager isn't trading with someone else.
 
             //TODO move to precheck, incase villager is trading with someone else.
-            Optional<LivingEntity> entity = target_brain.getMemory(VillagerManager.TRADING_ENTITY.get());
 
             if (villager.distanceTo(tradingVillager) < 3F) {
                 // Tell villager he's trading with me
-                target_brain.setMemory(VillagerManager.TRADING_ENTITY.get(), villager);
+                target_brain.setMemory(MemoryModuleType.INTERACTION_TARGET, villager);
 
                 //TODO check if need item is already set, because this could be the second time
                 //TODO If the current villager has a requested item the other villager can produce, then ask for that.
@@ -144,10 +143,10 @@ public class TradeForItem extends Behavior<Villager> {
 
         // If we made it to this point, then clear, everything.
         brain.eraseMemory(VillagerManager.NEED_ITEM.get());
-        brain.eraseMemory(VillagerManager.TRADING_ENTITY.get());
+        brain.eraseMemory(MemoryModuleType.INTERACTION_TARGET);
 
         target_brain.eraseMemory(VillagerManager.NEED_ITEM.get());
-        target_brain.eraseMemory(VillagerManager.TRADING_ENTITY.get());
+        target_brain.eraseMemory(MemoryModuleType.INTERACTION_TARGET);
     }
 
 
