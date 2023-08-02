@@ -15,10 +15,9 @@ buildscript {
     }
 }
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
-plugins {
-    id 'eclipse'
-    id 'maven-publish'
-}
+
+apply plugin 'eclipse'
+apply plugin 'maven-publish'
 
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'

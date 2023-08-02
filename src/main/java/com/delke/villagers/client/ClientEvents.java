@@ -4,35 +4,24 @@ import com.delke.villagers.ExampleMod;
 import com.delke.villagers.client.debug.VillagerDebugger;
 import com.delke.villagers.client.rendering.NewVillagerModel;
 import com.delke.villagers.client.rendering.NewVillagerRenderer;
-import com.delke.villagers.client.screen.MainScreen;
-import com.delke.villagers.client.screen.NewPauseScreen;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.screens.PauseScreen;
-import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.storage.LevelStorageException;
-import net.minecraft.world.level.storage.LevelStorageSource;
-import net.minecraft.world.level.storage.LevelSummary;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,45 +36,6 @@ import static com.delke.villagers.client.rendering.NewVillagerModel.*;
 @OnlyIn(Dist.CLIENT)
 public class ClientEvents {
     public static final Map<Villager, VillagerDebugger> debuggers = new HashMap<>();
-
-    boolean v = false;
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void OverrideMainMenu(ScreenEvent.InitScreenEvent event) {
-        List<LevelSummary> cachedList;
-        // Autoload into world
-        if (event.getScreen() instanceof TitleScreen) {
-            Minecraft.getInstance().setScreen(new MainScreen());
-
-            LevelStorageSource levelstoragesource = Minecraft.getInstance().getLevelSource();
-
-            try {
-                cachedList = levelstoragesource.getLevelList();
-            }
-            catch (LevelStorageException levelstorageexception) {
-                return;
-            }
-
-            Collections.sort(cachedList);
-
-            if (!cachedList.isEmpty() && !v) {
-                LevelSummary t = cachedList.get(0);
-                loadWorld(t);
-                v = true;
-            }
-        }
-
-        if (event.getScreen() instanceof PauseScreen) {
-            Minecraft.getInstance().setScreen(new NewPauseScreen(true));
-        }
-    }
-
-    private void loadWorld(LevelSummary summary) {
-        Minecraft mc = Minecraft.getInstance();
-        mc.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.EVOKER_CAST_SPELL, 5.0F));
-        if (mc.getLevelSource().levelExists(summary.getLevelId())) {
-            mc.loadLevel(summary.getLevelId());
-        }
-    }
 
     @SubscribeEvent
     public void RenderLevelStageEvent(RenderLevelStageEvent event) {

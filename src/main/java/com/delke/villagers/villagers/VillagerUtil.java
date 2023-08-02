@@ -129,13 +129,13 @@ public class VillagerUtil {
 
     public static List<BlockPos> searchBlocksWithin(Villager villager, List<Block> blocks, BlockPos pos, int yRadius, int radius) {
         int minX = pos.getX() - radius;
-        int maxX = pos.getX() + radius + 1;
+        int maxX = pos.getX() + radius;
 
         int minY = pos.getY() - yRadius;
-        int maxY = (pos.getY() + 1) + yRadius;
+        int maxY = (pos.getY()) + yRadius;
 
         int minZ = pos.getZ() - radius;
-        int maxZ = pos.getZ() + radius + 1;
+        int maxZ = pos.getZ() + radius;
 
         BoundingBox box = new BoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
 

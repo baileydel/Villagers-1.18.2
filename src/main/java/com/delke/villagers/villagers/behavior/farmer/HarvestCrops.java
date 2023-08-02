@@ -36,7 +36,8 @@ public class HarvestCrops extends Behavior<Villager> {
         super(ImmutableMap.of(
                 MemoryModuleType.LOOK_TARGET, MemoryStatus.VALUE_ABSENT,
                 MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT,
-                MemoryModuleType.SECONDARY_JOB_SITE, MemoryStatus.VALUE_PRESENT)
+                MemoryModuleType.SECONDARY_JOB_SITE, MemoryStatus.VALUE_PRESENT
+                )
         );
     }
 

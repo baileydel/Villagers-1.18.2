@@ -1,6 +1,5 @@
 package com.delke.villagers.villagers.profession.override;
 
-
 import com.delke.villagers.villagers.behavior.farmer.HarvestCrops;
 import com.delke.villagers.villagers.behavior.farmer.TillFarmland;
 import com.delke.villagers.villagers.profession.AbstractProfession;
@@ -9,7 +8,6 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.ai.behavior.Behavior;
-
 import net.minecraft.world.entity.ai.behavior.UseBonemeal;
 import net.minecraft.world.entity.ai.behavior.WorkAtComposter;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
@@ -54,10 +52,5 @@ public class NewFarmer extends AbstractProfession {
         return ImmutableList.of(
                 new ItemStack(Items.BREAD)
         );
-    }
-
-    @Override
-    public boolean isProducer() {
-        return true;
     }
 }

@@ -56,7 +56,7 @@ public class AbstractProfession extends VillagerProfession {
     }
 
     public boolean isProducer() {
-        return false;
+        return getProducibleItems().size() > 0;
     }
 
     public ImmutableList<Pair<Integer, ? extends Behavior<? super Villager>>> getWorkCorePackage() {
@@ -67,9 +67,9 @@ public class AbstractProfession extends VillagerProfession {
                         getRunOnePackage()
                 )),
 
-                getMinimalLookBehavior()
+                getMinimalLookBehavior(),
 
-                //Pair.of(99, new UpdateActivityFromSchedule())
+                Pair.of(99, new UpdateActivityFromSchedule())
         ));
 
         return ImmutableList.copyOf(t);
@@ -120,7 +120,7 @@ public class AbstractProfession extends VillagerProfession {
            //t.add(Pair.of(new SetLookAndInteract(EntityType.PLAYER, 4), 1));
         }
 
-        t.add(Pair.of(new TradeForItem(), 1001));
+        t.add(Pair.of(new TradeForItem(), 50));
 
         // Any additional behaviors
         t.addAll(getSecondWorkPackage());

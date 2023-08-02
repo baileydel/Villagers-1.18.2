@@ -1,7 +1,7 @@
 package com.delke.villagers.client;
 
 import com.delke.villagers.network.ClientboundVillagerScreenOpenPacket;
-import com.delke.villagers.client.screen.VillagerInventoryMenu;
+import com.delke.villagers.VillagerInventoryMenu;
 import com.delke.villagers.client.screen.VillagerInventoryScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;

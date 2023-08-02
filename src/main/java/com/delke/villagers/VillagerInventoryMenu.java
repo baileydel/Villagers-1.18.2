@@ -1,9 +1,4 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
-
-package com.delke.villagers.client.screen;
+package com.delke.villagers;
 
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;

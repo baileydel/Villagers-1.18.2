@@ -1,6 +1,5 @@
 package com.delke.villagers.villagers.behavior;
 
-import com.delke.villagers.villagers.VillagerManager;
 import com.delke.villagers.villagers.profession.AbstractProfession;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -14,6 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.block.SaplingBlock;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -99,7 +99,6 @@ public class Produce extends Behavior<Villager> {
         return false;
     }
 
-
     protected void start(@NotNull ServerLevel level, @NotNull Villager villager, long time) {
         SimpleContainer inventory = villager.getInventory();
 
@@ -116,6 +115,7 @@ public class Produce extends Behavior<Villager> {
                 }
             }
         }
+
         inventory.addItem(recipe.getResultItem());
         inventory.setChanged();
     }

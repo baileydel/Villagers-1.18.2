@@ -4,6 +4,7 @@ import com.delke.villagers.villagers.OverrideBrain;
 import com.delke.villagers.villagers.VillagerManager;
 import com.delke.villagers.villagers.profession.AbstractProfession;
 import com.google.common.collect.ImmutableList;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.sensing.Sensor;
@@ -11,6 +12,9 @@ import net.minecraft.world.entity.ai.sensing.SensorType;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerData;
 import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.entity.npc.VillagerTrades;
+import net.minecraft.world.item.trading.MerchantOffers;
+import net.minecraftforge.event.village.VillagerTradesEvent;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -59,8 +63,7 @@ public abstract class VillagerMixin {
             MemoryModuleType.LAST_WOKEN,
             MemoryModuleType.LAST_WORKED_AT_POI,
             MemoryModuleType.GOLEM_DETECTED_RECENTLY,
-            VillagerManager.NEED_ITEM.get(),
-            VillagerManager.TRADING_ENTITY.get()
+            VillagerManager.NEED_ITEM.get()
     );
 
 
@@ -74,7 +77,6 @@ public abstract class VillagerMixin {
     protected void brainProvider(CallbackInfoReturnable<Brain.Provider<Villager>> cir) {
         cir.setReturnValue(Brain.provider(MEMORY_TYPES, SENSOR_TYPES));
     }
-
 
     @Inject(
             method = "registerBrainGoals",
@@ -100,5 +102,14 @@ public abstract class VillagerMixin {
         }
 
         OverrideBrain.DEFAULT_BRAIN(brain, villager);
+    }
+
+    @Inject(
+            method = "updateTrades",
+            at = @At("HEAD"),
+            cancellable = true
+    )
+    protected void updateTrades(CallbackInfo ci) {
+        ci.cancel();
     }
 }

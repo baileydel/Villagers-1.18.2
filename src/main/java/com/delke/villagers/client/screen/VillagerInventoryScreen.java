@@ -1,5 +1,6 @@
 package com.delke.villagers.client.screen;
 
+import com.delke.villagers.VillagerInventoryMenu;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.TextComponent;
@@ -37,4 +38,11 @@ public class VillagerInventoryScreen extends AbstractContainerScreen<VillagerInv
        // this.blit(p_98413_, $$4, $$5, 0, 0, this.imageWidth, this.containerRows * 18 + 17);
        // this.blit(p_98413_, $$4, $$5 + this.containerRows * 18 + 17, 0, 126, this.imageWidth, 96);
     }
+
+    /*
+    public void renderTooltip(PoseStack p_169389_, List<Component> p_169390_, Optional<TooltipComponent> p_169391_, int p_169392_, int p_169393_) {
+        p_169390_.add(new TranslatableComponent("wkwk"));
+        super.renderTooltip(p_169389_, p_169390_, p_169391_, p_169392_,p_169393_);
+    }*/
 }
+

@@ -38,6 +38,7 @@ public class SearchDebugger {
         Level level = mc.level;
 
         if (level != null && area != null) {
+
             RenderingUtil.renderBoundingBox(stack, area);
 
             for (BlockPos pos : found) {
@@ -64,10 +65,6 @@ public class SearchDebugger {
         if (!found.contains(pos)) {
             found.add(pos);
         }
-    }
-
-    public void removeFound(BlockPos pos) {
-        found.remove(pos);
     }
 
     public void clear() {

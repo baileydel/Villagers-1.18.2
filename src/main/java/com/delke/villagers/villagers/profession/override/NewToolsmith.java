@@ -29,9 +29,4 @@ public class NewToolsmith extends AbstractProfession {
                 new ItemStack(Items.WOODEN_HOE)
         );
     }
-
-    @Override
-    public boolean isProducer() {
-        return true;
-    }
 }
