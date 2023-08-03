@@ -29,7 +29,7 @@ public class CutTree extends Behavior<Villager> {
                 ImmutableMap.of(
                         MemoryModuleType.SECONDARY_JOB_SITE, MemoryStatus.VALUE_PRESENT
                 ),
-        500, 5000);
+                500, 5000);
     }
 
     @Override
@@ -43,21 +43,27 @@ public class CutTree extends Behavior<Villager> {
         List<GlobalPos> list = villager.getBrain().getMemory(MemoryModuleType.SECONDARY_JOB_SITE).get();
 
         pos = list.get(0);
-        list.remove(0);
 
         BehaviorUtils.setWalkAndLookTargetMemories(villager, pos.pos(), 0.5F, 1);
     }
 
     @Override
     protected void tick(@NotNull ServerLevel level, @NotNull Villager villager, long time) {
-        if (pos.pos().closerToCenterThan(villager.position(), 1.5D)) {
-            BlockState state = level.getBlockState(pos.pos());
 
-            if (isValid(state)) {
-                findNext(level, pos.pos());
+        if (pos.pos().closerToCenterThan(villager.position(), 3.3D)) {
+            if (villager.getBrain().getMemory(MemoryModuleType.SECONDARY_JOB_SITE).isPresent()) {
+                List<GlobalPos> list = villager.getBrain().getMemory(MemoryModuleType.SECONDARY_JOB_SITE).get();
+                BlockState state = level.getBlockState(pos.pos());
+
+                if (isValid(state)) {
+                    findNext(level, pos.pos());
+                }
+                list.remove(pos);
+                villager.getBrain().setMemory(MemoryModuleType.SECONDARY_JOB_SITE, list);
             }
         }
     }
+
 
     private void findNext(ServerLevel level, BlockPos pos) {
         BlockState above = level.getBlockState(pos.above());
