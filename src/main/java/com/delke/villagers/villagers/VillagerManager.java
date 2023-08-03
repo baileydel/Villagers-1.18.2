@@ -32,6 +32,8 @@ public class VillagerManager {
 
     public static final DeferredRegister<VillagerProfession> VILLAGER_PROFESSIONS = DeferredRegister.create(ForgeRegistries.PROFESSIONS, ExampleMod.MOD_ID);
     public static final RegistryObject<VillagerProfession> GUARD = VILLAGER_PROFESSIONS.register("guard", Guard::new);
+    public static final RegistryObject<VillagerProfession> BUILDER = VILLAGER_PROFESSIONS.register("BUILDER", Builder::new);
+
     public static final RegistryObject<VillagerProfession> LUMBERJACK = VILLAGER_PROFESSIONS.register("lumberjack", LumberJack::new);
 
     public static final RegistryObject<VillagerProfession> NEWFARMER = registerOverride("newfarmer", new NewFarmer());
@@ -40,6 +42,7 @@ public class VillagerManager {
 
     public static final DeferredRegister<PoiType> POI_TYPES = DeferredRegister.create(ForgeRegistries.POI_TYPES, ExampleMod.MOD_ID);
     public static final RegistryObject<PoiType> GUARD_POI = POI_TYPES.register("guard_poi", () -> new PoiType("guard", PoiType.getBlockStates(Blocks.WAXED_COPPER_BLOCK), 1, 1));
+    public static final RegistryObject<PoiType> BUILDER_POI = POI_TYPES.register("builder_poi", () -> new PoiType("builder", PoiType.getBlockStates(Blocks.CRAFTING_TABLE), 1, 1));
     public static final RegistryObject<PoiType> LUMBERJACK_POI = POI_TYPES.register("lumberjack_poi", () -> new PoiType("lumberjack", PoiType.getBlockStates(Blocks.BEDROCK), 1, 1));
 
     public static final DeferredRegister<MemoryModuleType<?>> VILLAGER_MEMORIES = DeferredRegister.create(ForgeRegistries.MEMORY_MODULE_TYPES, ExampleMod.MOD_ID);
@@ -55,6 +58,7 @@ public class VillagerManager {
         try {
             ObfuscationReflectionHelper.findMethod(PoiType.class, "registerBlockStates", PoiType.class).invoke(null, GUARD_POI.get());
             ObfuscationReflectionHelper.findMethod(PoiType.class, "registerBlockStates", PoiType.class).invoke(null, LUMBERJACK_POI.get());
+            ObfuscationReflectionHelper.findMethod(PoiType.class, "registerBlockStates", PoiType.class).invoke(null, BUILDER_POI.get());
         }
         catch (Exception e) {
             e.printStackTrace();
