@@ -1,5 +1,6 @@
 package com.delke.villagers.mixin;
 
+import com.delke.villagers.CommonEvents;
 import com.delke.villagers.ExampleMod;
 import com.delke.villagers.villagers.VillagerUtil;
 import com.delke.villagers.villagers.profession.AbstractProfession;
@@ -92,7 +93,7 @@ public abstract class AbstractVillagerMixin implements ContainerListener {
                     int count = item.getCount() / 6;
 
                     if (stack.is(item.getItem()) && count >= 1) {
-                        offers.add(new ExampleMod.ItemsForEmeralds(item.getItem(), 1, 6, count, 1).getOffer(villager, villager.getRandom()));
+                        offers.add(new CommonEvents.ItemsForEmeralds(item.getItem(), 1, 6, count, 1).getOffer(villager, villager.getRandom()));
                     }
                 }
             }
