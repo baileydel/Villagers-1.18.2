@@ -1,6 +1,7 @@
 package com.delke.villagers.villagers;
 
 import com.delke.villagers.ExampleMod;
+import com.delke.villagers.villagers.profession.Builder;
 import com.delke.villagers.villagers.profession.Guard;
 import com.delke.villagers.villagers.profession.LumberJack;
 import com.delke.villagers.villagers.profession.override.NewFarmer;
@@ -32,7 +33,7 @@ public class VillagerManager {
 
     public static final DeferredRegister<VillagerProfession> VILLAGER_PROFESSIONS = DeferredRegister.create(ForgeRegistries.PROFESSIONS, ExampleMod.MOD_ID);
     public static final RegistryObject<VillagerProfession> GUARD = VILLAGER_PROFESSIONS.register("guard", Guard::new);
-    public static final RegistryObject<VillagerProfession> BUILDER = VILLAGER_PROFESSIONS.register("BUILDER", Builder::new);
+    public static final RegistryObject<VillagerProfession> BUILDER = VILLAGER_PROFESSIONS.register("builder", Builder::new);
 
     public static final RegistryObject<VillagerProfession> LUMBERJACK = VILLAGER_PROFESSIONS.register("lumberjack", LumberJack::new);
 
