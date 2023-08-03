@@ -4,6 +4,7 @@ import com.delke.villagers.capability.Reputation;
 import com.delke.villagers.capability.ReputationProvider;
 import com.delke.villagers.network.ClientboundVillagerScreenOpenPacket;
 import com.delke.villagers.network.Network;
+import com.delke.villagers.villagers.VillagerManager;
 import com.delke.villagers.villagers.VillagerUtil;
 import com.delke.villagers.villagers.profession.LumberJack;
 import net.minecraft.core.GlobalPos;
@@ -60,14 +61,13 @@ public class CommonEvents {
 
         for (Villager villager : list) {
             if (VillagerUtil.hasItemStack(villager, new ItemStack(Items.WOODEN_AXE))) {
-                Optional<List<GlobalPos>> optional = villager.getBrain().getMemory(MemoryModuleType.SECONDARY_JOB_SITE);
+                Optional<List<GlobalPos>> optional = villager.getBrain().getMemory(VillagerManager.TODO.get());
 
                 List<GlobalPos> list1 = optional.orElseGet(ArrayList::new);
 
                 list1.add(GlobalPos.of(serverlevel.dimension(), event.getPos()));
 
-                villager.getBrain().setMemory(MemoryModuleType.SECONDARY_JOB_SITE, list1);
-
+                villager.getBrain().setMemory(VillagerManager.TODO.get(), list1);
                 break;
             }
         }

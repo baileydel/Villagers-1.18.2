@@ -1,5 +1,6 @@
 package com.delke.villagers.villagers.behavior.lumberjack;
 
+import com.delke.villagers.villagers.VillagerManager;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
@@ -27,20 +28,20 @@ public class CutTree extends Behavior<Villager> {
     public CutTree() {
         super(
                 ImmutableMap.of(
-                        MemoryModuleType.SECONDARY_JOB_SITE, MemoryStatus.VALUE_PRESENT
+                        VillagerManager.TODO.get(), MemoryStatus.VALUE_PRESENT
                 ),
                 500, 5000);
     }
 
     @Override
     protected boolean checkExtraStartConditions(@NotNull ServerLevel level, @NotNull Villager villager) {
-        List<GlobalPos> list = villager.getBrain().getMemory(MemoryModuleType.SECONDARY_JOB_SITE).get();
+        List<GlobalPos> list = villager.getBrain().getMemory(VillagerManager.TODO.get()).get();
         return list.size() > 0;
     }
 
     @Override
     protected void start(@NotNull ServerLevel level, Villager villager, long time) {
-        List<GlobalPos> list = villager.getBrain().getMemory(MemoryModuleType.SECONDARY_JOB_SITE).get();
+        List<GlobalPos> list = villager.getBrain().getMemory(VillagerManager.TODO.get()).get();
 
         pos = list.get(0);
 
@@ -49,21 +50,22 @@ public class CutTree extends Behavior<Villager> {
 
     @Override
     protected void tick(@NotNull ServerLevel level, @NotNull Villager villager, long time) {
-
         if (pos.pos().closerToCenterThan(villager.position(), 3.3D)) {
-            if (villager.getBrain().getMemory(MemoryModuleType.SECONDARY_JOB_SITE).isPresent()) {
-                List<GlobalPos> list = villager.getBrain().getMemory(MemoryModuleType.SECONDARY_JOB_SITE).get();
+            if (villager.getBrain().getMemory(VillagerManager.TODO.get()).isPresent()) {
+                List<GlobalPos> list = villager.getBrain().getMemory(VillagerManager.TODO.get()).get();
                 BlockState state = level.getBlockState(pos.pos());
 
                 if (isValid(state)) {
                     findNext(level, pos.pos());
                 }
                 list.remove(pos);
-                villager.getBrain().setMemory(MemoryModuleType.SECONDARY_JOB_SITE, list);
+                villager.getBrain().setMemory(VillagerManager.TODO.get(), list);
             }
         }
+        else {
+            BehaviorUtils.setWalkAndLookTargetMemories(villager, pos.pos(), 0.5F, 1);
+        }
     }
-
 
     private void findNext(ServerLevel level, BlockPos pos) {
         BlockState above = level.getBlockState(pos.above());
