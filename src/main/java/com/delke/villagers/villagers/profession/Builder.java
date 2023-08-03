@@ -11,8 +11,8 @@ public class Builder extends AbstractProfession {
     public Builder() {
         super("builder",
                 VillagerManager.BUILDER_POI.get(),
-                ImmutableSet.of(Items.WHEAT, Items.WHEAT_SEEDS, Items.BEETROOT_SEEDS, Items.BONE_MEAL),
-                ImmutableSet.of(Blocks.FARMLAND),
+                ImmutableSet.of(),
+                ImmutableSet.of(),
                 SoundEvents.VILLAGER_WORK_FARMER
         );
     }
