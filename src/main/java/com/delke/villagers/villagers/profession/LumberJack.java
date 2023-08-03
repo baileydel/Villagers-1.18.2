@@ -21,9 +21,7 @@ public class LumberJack extends AbstractProfession {
         super(
                 "lumberjack",
                 LUMBERJACK_POI.get(),
-                ImmutableSet.of(
-
-                ),
+                ImmutableSet.of(),
                 ImmutableSet.of(),
                 SoundEvents.AMBIENT_SOUL_SAND_VALLEY_MOOD
         );
