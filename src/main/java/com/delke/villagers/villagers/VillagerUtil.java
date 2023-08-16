@@ -2,7 +2,9 @@ package com.delke.villagers.villagers;
 
 import com.delke.villagers.client.ClientEvents;
 import com.delke.villagers.client.debug.VillagerDebugger;
+import com.google.common.collect.ImmutableSet;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.npc.AbstractVillager;
@@ -87,6 +89,34 @@ public class VillagerUtil {
         return false;
     }
 
+    public static ImmutableSet<Item> itemPickup(List<TagKey<Item>> list) {
+        List<Item> items = new ArrayList<>();
+
+        for (TagKey<Item> tag : list) {
+            items.addAll(itemPickup(tag));
+        }
+
+        return ImmutableSet.copyOf(items);
+    }
+
+    public static ImmutableSet<Item> itemPickup(TagKey<Item> tag) {
+        List<Item> filter = new ArrayList<>();
+        List<Item> list = Registry.ITEM.stream().toList();
+
+        for (Item item : list) {
+            ItemStack stack = new ItemStack(item);
+
+            System.out.println(item);
+            System.out.println("\t\t" + stack.getTags().toList() + "\n");
+
+            if (stack.is(tag)) {
+                filter.add(item);
+            }
+        }
+        return ImmutableSet.copyOf(filter);
+    }
+
+
     //if there is no blockpos, then use villagers position
     // add debug version of search
 
@@ -98,6 +128,7 @@ public class VillagerUtil {
             VillagerDebugger debugger = ClientEvents.debuggers.get(villager);
             debugger.searchDebugger.setArea(box);
         }
+
 
         List<BlockPos> list = new ArrayList<>();
 

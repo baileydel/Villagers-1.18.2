@@ -1,9 +1,11 @@
 package com.delke.villagers.villagers.profession;
 
+import com.delke.villagers.villagers.VillagerUtil;
 import com.delke.villagers.villagers.behavior.lumberjack.CutTree;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.npc.Villager;
 
@@ -21,7 +23,7 @@ public class LumberJack extends AbstractProfession {
         super(
                 "lumberjack",
                 LUMBERJACK_POI.get(),
-                ImmutableSet.of(),
+                VillagerUtil.itemPickup(ItemTags.LOGS),
                 ImmutableSet.of(),
                 SoundEvents.AMBIENT_SOUL_SAND_VALLEY_MOOD
         );
