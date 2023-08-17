@@ -24,6 +24,7 @@ import net.minecraft.world.entity.schedule.Schedule;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -37,8 +38,17 @@ import java.util.Optional;
  */
 public class AbstractProfession extends VillagerProfession {
 
-    public AbstractProfession(String name, PoiType block, ImmutableSet<Item> request, ImmutableSet<Block> pois, @Nullable SoundEvent workSound) {
-        super(name, block, request, pois, workSound);
+    public AbstractProfession(String name, PoiType block, ImmutableSet<Block> pois, @Nullable SoundEvent workSound) {
+        super(name, block, ImmutableSet.of(), pois, workSound);
+    }
+
+    public void setRequestedItems(List<Item> requestedItems) {
+        this.requestedItems = requestedItems;
+    }
+
+    @Override
+    public @NotNull ImmutableSet<Item> getRequestedItems() {
+        return ImmutableSet.copyOf(requestedItems);
     }
 
     public void registerBrain(Brain<Villager> brain, Villager villager) {
