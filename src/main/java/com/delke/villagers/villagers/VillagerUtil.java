@@ -18,6 +18,7 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Bailey Delker
@@ -57,6 +58,51 @@ public class VillagerUtil {
             }
         }
         return ItemStack.EMPTY;
+    }
+
+    public static ItemStack getItem(Villager villager, Item item) {
+        SimpleContainer inv = villager.getInventory();
+
+        for (int i = 0; i < inv.getContainerSize(); i++) {
+            ItemStack stack = inv.getItem(i);
+
+            if (stack.is(item)) {
+                return stack;
+            }
+        }
+        return ItemStack.EMPTY;
+    }
+
+    public static void useItem(Villager villager, ItemStack itemstack) {
+        ItemStack stack = villager.getInventory().getItem(0);
+
+        stack.hurtAndBreak(3, villager, (dw) -> {
+
+        });
+    }
+
+    public static List<Item> itemPickup(List<TagKey<Item>> tags) {
+        List<Item> out = new ArrayList<>();
+
+        for (TagKey<Item> tag : tags) {
+            out.addAll(itemPickup(tag));
+        }
+
+        return out;
+    }
+
+    public static List<Item> itemPickup(TagKey<Item> tag) {
+        List<Item> filter = new ArrayList<>();
+        List<Item> list = Registry.ITEM.stream().toList();
+
+        for (Item item : list) {
+            ItemStack stack = new ItemStack(item);
+
+            if (stack.is(tag)) {
+                filter.add(item);
+            }
+        }
+        return filter;
     }
 
     public static boolean hasItemStack(AbstractVillager villager, ItemStack compare) {
