@@ -1,6 +1,7 @@
 package com.delke.villagers.villagers.behavior.lumberjack;
 
 import com.delke.villagers.villagers.VillagerManager;
+import com.delke.villagers.villagers.VillagerUtil;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
@@ -11,6 +12,9 @@ import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
@@ -58,8 +62,16 @@ public class CutTree extends Behavior<Villager> {
                 if (isValid(state)) {
                     findNext(level, pos.pos());
                 }
+                VillagerUtil.useItem(villager, new ItemStack(Items.WOODEN_AXE));
+
+                BlockState dirt = level.getBlockState(pos.pos().below());
+
+                if (dirt.is(Blocks.DIRT)) {
+                    level.setBlock(pos.pos(), Blocks.OAK_SAPLING.defaultBlockState(), 3);
+                }
+
                 list.remove(pos);
-                villager.getBrain().setMemory(VillagerManager.TODO.get(), list);
+                villager.getBrain().setMemory(VillagerManager.TODO.get(),list);
             }
         }
         else {
