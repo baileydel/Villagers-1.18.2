@@ -39,7 +39,6 @@ public class Guard extends AbstractProfession {
         super("guard",
                 GUARD_POI.get(),
                 ImmutableSet.of(),
-                ImmutableSet.of(),
                 SoundEvents.EVOKER_CAST_SPELL
         );
     }

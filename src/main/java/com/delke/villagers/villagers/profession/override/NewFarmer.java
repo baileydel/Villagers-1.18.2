@@ -27,7 +27,6 @@ public class NewFarmer extends AbstractProfession {
     public NewFarmer() {
         super("newfarmer",
                 PoiType.FARMER,
-                ImmutableSet.of(Items.WHEAT, Items.WHEAT_SEEDS, Items.BEETROOT_SEEDS, Items.BONE_MEAL),
                 ImmutableSet.of(Blocks.FARMLAND),
                 SoundEvents.VILLAGER_WORK_FARMER
         );

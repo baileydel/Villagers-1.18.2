@@ -23,10 +23,18 @@ public class LumberJack extends AbstractProfession {
         super(
                 "lumberjack",
                 LUMBERJACK_POI.get(),
-                VillagerUtil.itemPickup(ItemTags.LOGS),
                 ImmutableSet.of(),
                 SoundEvents.AMBIENT_SOUL_SAND_VALLEY_MOOD
         );
+    }
+
+    @Override
+    public @NotNull ImmutableSet<Item> getRequestedItems() {
+        List<Item> items = new ArrayList<>(VillagerUtil.itemPickup(List.of(ItemTags.LOGS, ItemTags.SAPLINGS)));
+        items.add(Items.APPLE);
+        items.add(Items.STICK);
+
+        return ImmutableSet.copyOf(items);
     }
 
     @Override
