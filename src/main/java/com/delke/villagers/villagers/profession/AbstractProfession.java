@@ -27,9 +27,11 @@ import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author Bailey Delker
@@ -37,6 +39,7 @@ import java.util.Optional;
  * @project Villagers-1.18.2
  */
 public class AbstractProfession extends VillagerProfession {
+    private List<Item> requestedItems = new ArrayList<>();
 
     public AbstractProfession(String name, PoiType block, ImmutableSet<Block> pois, @Nullable SoundEvent workSound) {
         super(name, block, ImmutableSet.of(), pois, workSound);

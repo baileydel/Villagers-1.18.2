@@ -8,7 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 /**
- * @author Bailey Delker
+ * @author Bailey Delker, Kent Stark
  * @created 07/13/2023 - 5:39 AM
  * @project Villagers-1.18.2
  */
@@ -17,7 +17,6 @@ public class NewToolsmith extends AbstractProfession {
         super(
                 "newtoolsmith",
                 PoiType.TOOLSMITH,
-                ImmutableSet.of(),
                 ImmutableSet.of(),
                 TOOLSMITH.getWorkSound()
         );

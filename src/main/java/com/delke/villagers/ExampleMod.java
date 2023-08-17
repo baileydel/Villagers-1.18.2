@@ -36,4 +36,6 @@ public class ExampleMod {
         event.enqueueWork(VillagerManager::registerPOIs);
         Network.init();
     }
+
+
 }

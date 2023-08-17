@@ -8,7 +8,12 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.concurrent.Immutable;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.delke.villagers.villagers.VillagerManager.LUMBERJACK_POI;

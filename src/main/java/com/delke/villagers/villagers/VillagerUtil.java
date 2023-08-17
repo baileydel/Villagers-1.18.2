@@ -135,34 +135,6 @@ public class VillagerUtil {
         return false;
     }
 
-    public static ImmutableSet<Item> itemPickup(List<TagKey<Item>> list) {
-        List<Item> items = new ArrayList<>();
-
-        for (TagKey<Item> tag : list) {
-            items.addAll(itemPickup(tag));
-        }
-
-        return ImmutableSet.copyOf(items);
-    }
-
-    public static ImmutableSet<Item> itemPickup(TagKey<Item> tag) {
-        List<Item> filter = new ArrayList<>();
-        List<Item> list = Registry.ITEM.stream().toList();
-
-        for (Item item : list) {
-            ItemStack stack = new ItemStack(item);
-
-            System.out.println(item);
-            System.out.println("\t\t" + stack.getTags().toList() + "\n");
-
-            if (stack.is(tag)) {
-                filter.add(item);
-            }
-        }
-        return ImmutableSet.copyOf(filter);
-    }
-
-
     //if there is no blockpos, then use villagers position
     // add debug version of search
 
