@@ -1,28 +1,30 @@
 package com.delke.villagers.villagers.behavior.shepherd;
 
+import com.delke.villagers.villagers.behavior.ItemRequirementBehavior;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.memory.NearestVisibleLivingEntities;
 import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.function.Predicate;
 
 /**
- * @author Bailey Delker
+ * @author Bailey Delker & Kent Stark
  * @created 07/05/2023 - 10:30 PM
  * @project Villagers-1.18.2
  */
-public class ShearSheep extends Behavior<Villager> {
+public class ShearSheep extends ItemRequirementBehavior {
     private final Predicate<LivingEntity> predicate;
     private final float maxDistSqr;
 
@@ -35,27 +37,30 @@ public class ShearSheep extends Behavior<Villager> {
                 ImmutableMap.of(
                         MemoryModuleType.LOOK_TARGET, MemoryStatus.VALUE_ABSENT,
                         MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES, MemoryStatus.VALUE_PRESENT
-                )
+                ), new ItemStack(Items.SHEARS)
         );
         this.predicate = predicate;
         this.maxDistSqr = dist * dist;
     }
 
     protected boolean checkExtraStartConditions(@NotNull ServerLevel level, Villager villager) {
-        NearestVisibleLivingEntities nearestvisiblelivingentities = villager.getBrain().getMemory(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES).get();
-        Optional<LivingEntity> nearestEntityMatchingTest = nearestvisiblelivingentities.findClosest(
-                this.predicate.and(
-                        (entity) -> {
-                            if (entity instanceof Sheep sheep) {
-                                if (!sheep.isSheared() && sheep.distanceToSqr(villager) <= (double) this.maxDistSqr) {
-                                    villager.getBrain().setMemory(MemoryModuleType.INTERACTION_TARGET, sheep);
-                                    return true;
+        if(super.checkExtraStartConditions(level, villager)) {
+            NearestVisibleLivingEntities nearestvisiblelivingentities = villager.getBrain().getMemory(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES).get();
+            Optional<LivingEntity> nearestEntityMatchingTest = nearestvisiblelivingentities.findClosest(
+                    this.predicate.and(
+                            (entity) -> {
+                                if (entity instanceof Sheep sheep) {
+                                    if (!sheep.isBaby() && !sheep.isSheared() && sheep.distanceToSqr(villager) <= (double) this.maxDistSqr) {
+                                        villager.getBrain().setMemory(MemoryModuleType.INTERACTION_TARGET, sheep);
+                                        return true;
+                                    }
                                 }
-                            }
-                            return false;
-                        })
-        );
-        return nearestEntityMatchingTest.isPresent();
+                                return false;
+                            })
+            );
+            return nearestEntityMatchingTest.isPresent();
+        }
+        return false;
     }
 
     protected void start(@NotNull ServerLevel level, @NotNull Villager villager, long p_23908_) {
@@ -80,8 +85,10 @@ public class ShearSheep extends Behavior<Villager> {
 
     @Override
     protected boolean canStillUse(@NotNull ServerLevel level, Villager villager, long p_22547_) {
-        if (villager.getBrain().getMemory(MemoryModuleType.INTERACTION_TARGET).get() instanceof Sheep sheep) {
-            return !sheep.isSheared();
+        if (super.canStillUse(level, villager, p_22547_)) {
+            if (villager.getBrain().getMemory(MemoryModuleType.INTERACTION_TARGET).get() instanceof Sheep sheep) {
+                return !sheep.isSheared();
+            }
         }
         return false;
     }
