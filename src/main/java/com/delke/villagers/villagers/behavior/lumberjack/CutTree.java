@@ -9,7 +9,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
-import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.behavior.VillagerPanicTrigger;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.ItemStack;
@@ -120,6 +120,9 @@ public class CutTree extends Behavior<Villager> {
 
     @Override
     protected boolean canStillUse(@NotNull ServerLevel level, @NotNull Villager villager, long time) {
+        if (VillagerPanicTrigger.isHurt(villager) || VillagerPanicTrigger.hasHostile(villager)) {
+            return false;
+        }
         return isValid(level.getBlockState(pos.pos()));
     }
 }

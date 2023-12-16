@@ -12,7 +12,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +21,15 @@ import static com.delke.villagers.villagers.VillagerManager.LUMBERJACK_POI;
  * @author Bailey Delker
  * @created 07/22/2023 - 1:16 PM
  * @project Villagers-1.18.2
+ */
+
+/* TODO: 8/23/23
+ * add level system, increases speed of tree cutting
+ * cut trees one log at a time -speed based on type of axe
+ * player can control the village and can determine what and where to build buildings
+ * trades will change based on what items villagers have
+ * add trades to villagers
+ * behavior system
  */
 public class LumberJack extends AbstractProfession {
     public LumberJack() {
@@ -45,7 +53,7 @@ public class LumberJack extends AbstractProfession {
     @Override
     public List<Pair<Behavior<? super Villager>, Integer>> getSecondWorkPackage() {
         return List.of(
-                Pair.of(new CutTree(), 100)
+                Pair.of(new CutTree(), 1)
         );
     }
 }
