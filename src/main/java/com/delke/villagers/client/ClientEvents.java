@@ -1,6 +1,7 @@
 package com.delke.villagers.client;
 
 import com.delke.villagers.ExampleMod;
+import com.delke.villagers.client.debug.BuildingRenderer;
 import com.delke.villagers.client.debug.VillagerDebugger;
 import com.delke.villagers.client.rendering.NewVillagerModel;
 import com.delke.villagers.client.rendering.NewVillagerRenderer;
@@ -43,6 +44,8 @@ public class ClientEvents {
     @SubscribeEvent
     public void RenderLevelStageEvent(RenderLevelStageEvent event) {
         if (event.getStage().equals(RenderLevelStageEvent.Stage.AFTER_CUTOUT_BLOCKS)) {
+            //render building position of class houses
+            BuildingRenderer.render(event.getPoseStack());
             for (Map.Entry<Villager, VillagerDebugger> debuggerEntry : debuggers.entrySet()) {
                 debuggerEntry.getValue().searchDebugger.render(event.getPoseStack());
             }

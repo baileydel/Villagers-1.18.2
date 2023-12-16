@@ -33,6 +33,7 @@ public class SearchDebugger {
         this.area = area;
     }
 
+
     public void render(PoseStack stack) {
         Minecraft mc = Minecraft.getInstance();
         Level level = mc.level;
